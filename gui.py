@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
-from database import db
+from database import Database
 
 import re
 #---------END---------#
@@ -16,8 +16,9 @@ maxWindowMultiplier = 1.25
 
 taskButtonColour = "yellow"
 
-db = db("profile.db")
-profiles = db.fetchProfiles()
+db = Database("profile.db")
+profileIDs = db.fetchIDs()
+profiles = []
 #---------END---------#
 
 
@@ -30,7 +31,7 @@ def profileWindow():
         else:
             messagebox.showinfo("Information", "Enter name to create a profile!")
 
-        profiles = db.fetchProfiles()
+        refreshProfilesList()
         profileCombo.config(values=profiles)
         if len(profiles) == 1:
             profileCombo.current(0)
@@ -39,11 +40,17 @@ def profileWindow():
         refreshTaskList()
 
     def deleteProfile():
-        profileName = profileCombo.get()
-        db.removeProfile(profileName)
-        db.removeTasks(profileName)
+        if profileCombo.get() == "":
+            messagebox.showinfo("Information", "There are no profiles to delete!")
+            profileWindow.destroy()
+            return
+        profileIndex = profileCombo.current()
+        profileIDs = db.fetchIDs()
+        profileID = profileIDs[profileIndex]
+        db.removeProfile(str(profileID)[2:-3])
+        db.removeTasks(str(profileID)[2:-3])
 
-        profiles = db.fetchProfiles()
+        refreshProfilesList()
         if len(profiles) != 0:
             profileCombo.config(values=profiles)
             profileCombo.current(0)
@@ -69,6 +76,10 @@ def profileWindow():
     deleteProfileButton.pack()
 
 def addTaskWindow():
+    if profileCombo.get() == "":
+        messagebox.showinfo("Information", "Create a valid profile first!")
+        return
+
     def addTask():
         if len(input.get()) > 0:
             taskText = input.get()
@@ -77,16 +88,14 @@ def addTaskWindow():
             addTaskWindow.destroy()
             return
             
-        currentNames = db.fetchProfiles()
-        for x in currentNames:
-            if str(x)[2:-3] == profileCombo.get(): 
-                db.insertTask(profileCombo.get(), taskText)
-                refreshTaskList()
-                addTaskWindow.destroy()
-                return
+        refreshProfilesList()
+        profileIndex = profileCombo.current()
+        profileIDs = db.fetchIDs()
+        profileID = profileIDs[profileIndex]
 
+        db.insertTask(str(profileID)[2:-3], taskText)
+        refreshTaskList()
         addTaskWindow.destroy()
-        messagebox.showinfo("Information", "Create/Select a valid profile first!")
 
     addTaskWindow = tk.Toplevel()
     addTaskWindow.minsize(350,150)
@@ -100,18 +109,37 @@ def addTaskWindow():
     addTaskButton.pack()
 
 def removeTask():
+    if profileCombo.get() == "":
+        return
     taskText = str(taskList.get("anchor"))
-    db.removeTask(profileCombo.get(), taskText)
+    profileIndex = profileCombo.current()
+    profileIDs = db.fetchIDs()
+    profileID = profileIDs[profileIndex]
+    db.removeTask(str(profileID)[2:-3], taskText)
     refreshTaskList()
 
 def selectedCombo(event):
     refreshTaskList()
 
 def refreshTaskList():
+    if profileCombo.get() == "":
+        taskList.delete(0,"end")
+        return
     taskList.delete(0,"end")
-    dbTaskList = db.fetchTasks(profileCombo.get())
+    profileIndex = profileCombo.current()
+    profileIDs = db.fetchIDs()
+    profileID = profileIDs[profileIndex]
+
+    dbTaskList = db.fetchTasks(str(profileID)[2:-3])
     for item in dbTaskList:
         taskList.insert("end", str(item)[2:-3])
+
+def refreshProfilesList():
+    profiles.clear()
+    profileIDs = db.fetchIDs()
+    if len(profileIDs) > 0:
+        for x in profileIDs:
+            profiles.append(db.fetchProfileById(str(x)[2:-3]))
 #---------END---------#
 
 
@@ -131,7 +159,8 @@ userFrame = tk.Frame(root, bg="#cce6ff")
 userFrame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.05)
 
 # Combobox
-if len(profiles) != 0:
+if len(profileIDs) != 0:
+    refreshProfilesList()
     profileCombo = ttk.Combobox(userFrame, state="readonly", value=profiles)
     profileCombo.current(0)
 else:
