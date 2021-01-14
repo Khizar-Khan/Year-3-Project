@@ -149,6 +149,51 @@ def removeTask():
     db.removeTask(str(profileID)[2:-3], taskText)
     refreshTaskList()
 
+def taskDetailsWindow():
+    if taskList.get("anchor") == "":
+        messagebox.showinfo("Information", "You do not have a task selected!")
+        return
+    def setDetail(whichDetail, inputDetail):
+        profileIndex = profileCombo.current()
+        profileIDs = db.fetchIDs()
+        profileID = profileIDs[profileIndex]
+        selectedTask = taskList.get("anchor")
+
+        db.setTaskDetail(str(profileID)[2:-3], selectedTask, whichDetail, inputDetail)
+
+        taskDetailsWindow.destroy()
+        refreshTaskList()
+
+    taskDetailsWindow = tk.Toplevel()
+    taskDetailsWindow.minsize(400,200)
+    taskDetailsWindow.maxsize(400,200)
+    taskDetailsWindow.title("Task Details")
+    taskDetailsWindow.grab_set()
+
+    inputDeadline = tk.Entry(taskDetailsWindow)
+    inputDeadline.pack()
+
+    inputReminder = tk.Entry(taskDetailsWindow)
+    inputReminder.pack()
+
+    inputRecurring = tk.Entry(taskDetailsWindow)
+    inputRecurring.pack()
+
+    inputImportant = tk.Entry(taskDetailsWindow)
+    inputImportant.pack()
+
+    setDeadlineButton = tk.Button(taskDetailsWindow, text="Set Deadline", command=lambda:setDetail(1,inputDeadline.get()))
+    setDeadlineButton.pack()
+
+    setReminderButton = tk.Button(taskDetailsWindow, text="Set Reminder", command=lambda:setDetail(2,inputReminder.get()))
+    setReminderButton.pack()
+
+    setRecurringButton = tk.Button(taskDetailsWindow, text="Set Recurring", command=lambda:setDetail(3,inputRecurring.get()))
+    setRecurringButton.pack()
+
+    setImportantButton = tk.Button(taskDetailsWindow, text="Set Important", command=lambda:setDetail(4,inputImportant.get()))
+    setImportantButton.pack()
+
 def selectedCombo(event):
     refreshTaskList()
 
@@ -225,7 +270,7 @@ removeTaskButton = tk.Button(taskFrame, text="Remove Task", bg=taskButtonColour,
 removeTaskButton.place(relx=0.25, rely=0, relwidth=0.25, relheight=0.05)
 
 # Button: Task details
-taskDetailsButton = tk.Button(taskFrame, text="Task Details", bg=taskButtonColour)
+taskDetailsButton = tk.Button(taskFrame, text="Task Details", bg=taskButtonColour, command=taskDetailsWindow)
 taskDetailsButton.place(relx=0.50, rely=0, relwidth=0.25, relheight=0.05)
 
 # Button: Profile Details

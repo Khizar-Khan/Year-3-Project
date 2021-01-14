@@ -11,7 +11,7 @@ class Database:
 
         # Create table
         self.c.execute("CREATE TABLE IF NOT EXISTS profiles (id text, name text)")
-        self.c.execute("CREATE TABLE IF NOT EXISTS tasks (id text, task text)")
+        self.c.execute("CREATE TABLE IF NOT EXISTS tasks (id text, task text, deadline INTEGER, reminder INTEGER, recurring INTEGER, important INTEGER)")
 
         # Commit
         self.conn.commit()
@@ -47,7 +47,7 @@ class Database:
         return tasks
 
     def insertTask(self, id, task):
-        self.c.execute("INSERT INTO tasks (id, task) VALUES (?,?)", (id, task))
+        self.c.execute("INSERT INTO tasks (id, task, deadline, reminder, recurring, important) VALUES (?,?,0,0,0,0)", (id, task))
         self.conn.commit()
 
     def removeTask(self, id, task):
@@ -57,3 +57,23 @@ class Database:
     def removeTasks(self, id):
         self.c.execute("DELETE FROM tasks WHERE id=?", (id,))
         self.conn.commit()
+
+    def setTaskDetail(self, id, task, whichDetail, setDetail):
+        if whichDetail == 1:
+            self.c.execute("UPDATE tasks SET deadline=? WHERE id=? AND task=?", (setDetail, id, task))
+            self.conn.commit()
+            pass
+        elif whichDetail == 2:
+            self.c.execute("UPDATE tasks SET reminder=? WHERE id=? AND task=?", (setDetail, id, task))
+            self.conn.commit()
+            pass
+        elif whichDetail == 3:
+            self.c.execute("UPDATE tasks SET recurring=? WHERE id=? AND task=?", (setDetail, id, task))
+            self.conn.commit()
+            pass
+        elif whichDetail == 4:
+            self.c.execute("UPDATE tasks SET important=? WHERE id=? AND task=?", (setDetail, id, task))
+            self.conn.commit()
+            pass
+        else:
+            return
