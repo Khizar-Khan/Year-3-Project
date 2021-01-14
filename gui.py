@@ -25,7 +25,7 @@ profiles = []
 #------FUNCTIONS------#
 def profileWindow():
     def createProfile():
-        profileName = re.sub('[\W_]+', '', input.get())
+        profileName = re.sub('[\W_]+', '', inputCreate.get())
         if len(profileName) > 0:
             db.insertProfile(profileName)
         else:
@@ -61,16 +61,47 @@ def profileWindow():
         profileWindow.destroy()
         refreshTaskList()
 
+    def updateProfile():
+        if profileCombo.get() == "":
+            messagebox.showinfo("Information", "There are no profiles to change!")
+            profileWindow.destroy()
+            return
+        profileName = re.sub('[\W_]+', '', inputUpdate.get())
+        if len(profileName) > 0:
+            profileIndex = profileCombo.current()
+            profileIDs = db.fetchIDs()
+            profileID = profileIDs[profileIndex]
+            db.updateProfile(profileName, str(profileID)[2:-3])
+        else:
+            messagebox.showinfo("Information", "Enter name to update a profile!")
+
+        refreshProfilesList()
+        profileCombo.config(values=profiles)
+        if len(profiles) == 1:
+            profileCombo.current(0)
+        else:
+            profileCombo.current(profileIndex)
+
+        profileWindow.destroy()
+        refreshTaskList()
+
     profileWindow = tk.Toplevel()
     profileWindow.minsize(350,150)
     profileWindow.maxsize(350,150)
     profileWindow.title("Profile Details")
+    profileWindow.grab_set()
 
-    input = tk.Entry(profileWindow)
-    input.pack()
+    inputCreate = tk.Entry(profileWindow)
+    inputCreate.pack()
+
+    inputUpdate = tk.Entry(profileWindow)
+    inputUpdate.pack()
 
     createProfileButton = tk.Button(profileWindow, text="Create Profile", command=createProfile)
     createProfileButton.pack()
+
+    updateProfileButton = tk.Button(profileWindow, text="Change Profile Name", command=updateProfile)
+    updateProfileButton.pack()
 
     deleteProfileButton = tk.Button(profileWindow, text="Delete Profile", command=deleteProfile)
     deleteProfileButton.pack()
@@ -87,8 +118,7 @@ def addTaskWindow():
             messagebox.showinfo("Information", "Enter a task!")
             addTaskWindow.destroy()
             return
-            
-        refreshProfilesList()
+
         profileIndex = profileCombo.current()
         profileIDs = db.fetchIDs()
         profileID = profileIDs[profileIndex]
@@ -101,6 +131,7 @@ def addTaskWindow():
     addTaskWindow.minsize(350,150)
     addTaskWindow.maxsize(350,150)
     addTaskWindow.title("Add Task")
+    addTaskWindow.grab_set()
 
     input = tk.Entry(addTaskWindow)
     input.pack()

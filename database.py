@@ -36,6 +36,10 @@ class Database:
         self.c.execute("DELETE FROM profiles WHERE id=?", (id,))
         self.conn.commit()
 
+    def updateProfile(self, name, id):
+        self.c.execute("UPDATE profiles SET name=? WHERE id=?", (name, id))
+        self.conn.commit()
+        
     # Tasks
     def fetchTasks(self, id):
         self.c.execute("SELECT task FROM tasks WHERE id = ?", (id,))
