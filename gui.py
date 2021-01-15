@@ -1,7 +1,9 @@
 #-------IMPORTS-------#
 import tkinter as tk
+from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from tkcalendar import *
 
 from database import Database
 
@@ -153,16 +155,8 @@ def taskDetailsWindow():
     if taskList.get("anchor") == "":
         messagebox.showinfo("Information", "You do not have a task selected!")
         return
-    def setDetail(whichDetail, inputDetail):
-        profileIndex = profileCombo.current()
-        profileIDs = db.fetchIDs()
-        profileID = profileIDs[profileIndex]
-        selectedTask = taskList.get("anchor")
 
-        db.setTaskDetail(str(profileID)[2:-3], selectedTask, whichDetail, inputDetail)
-
-        taskDetailsWindow.destroy()
-        refreshTaskList()
+    task = taskList.get("anchor")
 
     taskDetailsWindow = tk.Toplevel()
     taskDetailsWindow.minsize(400,200)
@@ -170,29 +164,49 @@ def taskDetailsWindow():
     taskDetailsWindow.title("Task Details")
     taskDetailsWindow.grab_set()
 
-    inputDeadline = tk.Entry(taskDetailsWindow)
-    inputDeadline.pack()
+    deadlineButton = tk.Button(taskDetailsWindow, text="Set Deadline", command=lambda:[calendarWindow(task, 1), taskDetailsWindow.destroy()])
+    deadlineButton.pack()
 
-    inputReminder = tk.Entry(taskDetailsWindow)
-    inputReminder.pack()
+    reminderButton = tk.Button(taskDetailsWindow, text="Set Reminder", command=lambda:[calendarWindow(task, 2), taskDetailsWindow.destroy()])
+    reminderButton.pack()
 
-    inputRecurring = tk.Entry(taskDetailsWindow)
-    inputRecurring.pack()
+    profileIndex = profileCombo.current()
+    profileIDs = db.fetchIDs()
+    profileID = profileIDs[profileIndex]
 
-    inputImportant = tk.Entry(taskDetailsWindow)
-    inputImportant.pack()
+    recurringActive = IntVar()
+    recurringActive.set(db.getIfTaskRecurring(str(profileID)[2:-3], task))
+    setRecurringCheck = tk.Checkbutton(taskDetailsWindow, text="Set Recurring", variable=recurringActive, command=lambda:setDetail(task,3,recurringActive.get()))
+    setRecurringCheck.pack()
 
-    setDeadlineButton = tk.Button(taskDetailsWindow, text="Set Deadline", command=lambda:setDetail(1,inputDeadline.get()))
-    setDeadlineButton.pack()
+    importantActive = IntVar()
+    importantActive.set(db.getIfTaskImportant(str(profileID)[2:-3], task))
+    setImportantCheck = tk.Checkbutton(taskDetailsWindow, text="Set as Important", variable=importantActive, command=lambda:setDetail(task,4,importantActive.get()))
+    setImportantCheck.pack()
 
-    setReminderButton = tk.Button(taskDetailsWindow, text="Set Reminder", command=lambda:setDetail(2,inputReminder.get()))
-    setReminderButton.pack()
+def calendarWindow(whichTask, whichDetail):
+    calendarWindow = tk.Toplevel()
+    calendarWindow.minsize(400,200)
+    calendarWindow.maxsize(400,200)
+    calendarWindow.title("Calendar")
+    calendarWindow.grab_set()
 
-    setRecurringButton = tk.Button(taskDetailsWindow, text="Set Recurring", command=lambda:setDetail(3,inputRecurring.get()))
-    setRecurringButton.pack()
+    cal = Calendar(calendarWindow, selectmode="day", year=2021, month=1, day=15)
+    cal.pack(fill = "both", expand =True)
 
-    setImportantButton = tk.Button(taskDetailsWindow, text="Set Important", command=lambda:setDetail(4,inputImportant.get()))
-    setImportantButton.pack()
+    setDetailButton = tk.Button(calendarWindow, text="Set", command=lambda:[setDetail(whichTask,whichDetail,cal.get_date()), calendarWindow.destroy()])
+    setDetailButton.pack()
+
+def setDetail(whichTask, whichDetail, inputDetail):
+    print(whichDetail)
+    print(inputDetail)
+    profileIndex = profileCombo.current()
+    profileIDs = db.fetchIDs()
+    profileID = profileIDs[profileIndex]
+
+    db.setTaskDetail(str(profileID)[2:-3], whichTask, whichDetail, inputDetail)
+
+    refreshTaskList()
 
 def selectedCombo(event):
     refreshTaskList()

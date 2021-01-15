@@ -11,7 +11,7 @@ class Database:
 
         # Create table
         self.c.execute("CREATE TABLE IF NOT EXISTS profiles (id text, name text)")
-        self.c.execute("CREATE TABLE IF NOT EXISTS tasks (id text, task text, deadline INTEGER, reminder INTEGER, recurring INTEGER, important INTEGER)")
+        self.c.execute("CREATE TABLE IF NOT EXISTS tasks (id text, task text, deadline TEXT, reminder TEXT, recurring INTEGER, important INTEGER)")
 
         # Commit
         self.conn.commit()
@@ -77,3 +77,13 @@ class Database:
             pass
         else:
             return
+
+    def getIfTaskRecurring(self, id, task):
+        self.c.execute("SELECT recurring FROM tasks WHERE id=? AND task=?", (id, task))
+        recurring = self.c.fetchone()
+        return recurring
+
+    def getIfTaskImportant(self, id, task):
+        self.c.execute("SELECT important FROM tasks WHERE id=? AND task=?", (id, task))
+        important = self.c.fetchone()
+        return important
