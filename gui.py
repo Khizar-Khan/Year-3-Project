@@ -18,9 +18,18 @@ maxWindowMultiplier = 1.25
 
 taskButtonColour = "yellow"
 
-db = Database("profile.db")
+db = Database("profile.db") # Object
 profileIDs = db.fetchIDs()
 profiles = []
+hourDropOptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+minuteDropOptions = [
+    "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
+    "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
+    "20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
+    "30", "31", "32", "33", "34", "35", "36", "37", "38", "39",
+    "40", "41", "42", "43", "44", "45", "46", "47", "48", "49",
+    "50", "51", "52", "53", "54", "55", "56", "57", "58", "59",
+    ]
 #---------END---------#
 
 
@@ -186,20 +195,31 @@ def taskDetailsWindow():
 
 def calendarWindow(whichTask, whichDetail):
     calendarWindow = tk.Toplevel()
-    calendarWindow.minsize(400,200)
-    calendarWindow.maxsize(400,200)
+    calendarWindow.minsize(400,400)
+    calendarWindow.maxsize(400,400)
     calendarWindow.title("Calendar")
     calendarWindow.grab_set()
 
-    cal = Calendar(calendarWindow, selectmode="day", year=2021, month=1, day=15)
+    cal = Calendar(calendarWindow, selectmode="day", year=2021, month=1, day=16)
     cal.pack(fill = "both", expand =True)
 
-    setDetailButton = tk.Button(calendarWindow, text="Set", command=lambda:[setDetail(whichTask,whichDetail,cal.get_date()), calendarWindow.destroy()])
-    setDetailButton.pack()
+    hourDrop = ttk.Combobox(calendarWindow, state="readonly", value=hourDropOptions)
+    hourDrop.current(11)
+    hourDrop.pack()
+
+    minuteDrop = ttk.Combobox(calendarWindow, state="readonly", value=minuteDropOptions)
+    minuteDrop.current(0)
+    minuteDrop.pack()
+
+    radioCheckPM = tk.Radiobutton(calendarWindow, text="PM", variable=radioMeridian, value=1)
+    radioCheckPM.pack()
+    radioCheckAM = tk.Radiobutton(calendarWindow, text="AM", variable=radioMeridian, value=2)
+    radioCheckAM.pack()
+
+    setDetailButton = tk.Button(calendarWindow, text="Set", command=lambda:[setDetail(whichTask,whichDetail,cal.get_date()+" "+str(hourDrop.get())+":"+str(minuteDrop.get())+" "+("PM" if str(radioMeridian.get()) == "1" else "AM")), calendarWindow.destroy()])
+    setDetailButton.pack(pady=20)
 
 def setDetail(whichTask, whichDetail, inputDetail):
-    print(whichDetail)
-    print(inputDetail)
     profileIndex = profileCombo.current()
     profileIDs = db.fetchIDs()
     profileID = profileIDs[profileIndex]
@@ -240,6 +260,8 @@ root.maxsize(int(windowHeight*maxWindowMultiplier), int(windowWidth*maxWindowMul
 root.title("Family Organiser")
 root.iconphoto(True, tk.PhotoImage(file="Images/Icon.png"))
 root.geometry(str(windowHeight)+"x"+str(windowWidth))
+
+radioMeridian = tk.IntVar(value="1")
 #---------END---------#
 
 
