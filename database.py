@@ -87,3 +87,13 @@ class Database:
         self.c.execute("SELECT important FROM tasks WHERE id=? AND task=?", (id, task))
         important = self.c.fetchone()
         return important
+
+    def getDeadline(self, id, task):
+        self.c.execute("SELECT deadline FROM tasks WHERE id=? AND task=?", (id, task))
+        deadline = self.c.fetchone()
+        return deadline
+
+    def getReminder(self, id, task):
+        self.c.execute("SELECT reminder FROM tasks WHERE id=? AND task=?", (id, task))
+        reminder = self.c.fetchone()
+        return reminder
