@@ -19,8 +19,10 @@ maxWindowMultiplier = 1.25
 
 taskButtonColour = "yellow"
 
-db = Database("profile.db") # Object
-tm = TaskManager() # Object
+root = tk.Tk()
+db = Database("profile.db") 
+tm = TaskManager()
+
 profileIDs = db.fetchIDs()
 profiles = []
 hourDropOptions = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
@@ -125,16 +127,23 @@ def addTaskWindow():
         return
 
     def addTask():
-        if len(input.get()) > 0:
-            taskText = input.get()
-        else:
-            messagebox.showinfo("Information", "Enter a task!")
-            addTaskWindow.destroy()
-            return
-
         profileIndex = profileCombo.current()
         profileIDs = db.fetchIDs()
         profileID = profileIDs[profileIndex]
+
+        if len(input.get()) > 0:
+            taskText = input.get()
+            allProfileTasks = db.fetchTasks(str(profileID)[2:-3])
+
+            for x in allProfileTasks:
+                if taskText == str(x)[2:-3]:
+                    addTaskWindow.destroy()
+                    messagebox.showinfo("Information", "Task already exists!")
+                    return
+        else:
+            addTaskWindow.destroy()
+            messagebox.showinfo("Information", "Enter a task!")
+            return
 
         db.insertTask(str(profileID)[2:-3], taskText)
         refreshTaskList()
@@ -252,11 +261,15 @@ def refreshProfilesList():
     if len(profileIDs) > 0:
         for x in profileIDs:
             profiles.append(db.fetchProfileById(str(x)[2:-3]))
+
+def repeatDueDeadlinesCall():
+    print(tm.getAllDueDeadlines())
+
+    root.after(1000, repeatDueDeadlinesCall)
 #---------END---------#
 
 
 #------SETTINGS------#
-root = tk.Tk()
 root.minsize(windowHeight, windowWidth)
 root.maxsize(int(windowHeight*maxWindowMultiplier), int(windowWidth*maxWindowMultiplier))
 root.title("Family Organiser")
@@ -316,5 +329,7 @@ profileDetailsButton = tk.Button(taskFrame, text="Profile Details", bg=taskButto
 profileDetailsButton.place(relx=0.75, rely=0, relwidth=0.25, relheight=0.05)
 #---------END---------#
 
+
+repeatDueDeadlinesCall()
 
 tk.mainloop()
