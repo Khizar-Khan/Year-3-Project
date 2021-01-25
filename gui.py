@@ -266,6 +266,12 @@ def repeatDueDeadlinesCall():
     print(tm.getAllDueDeadlines())
 
     root.after(1000, repeatDueDeadlinesCall)
+
+def repeatDueRemindersCall():
+    print(tm.getAllDueReminders())
+
+    root.after(1000, repeatDueRemindersCall)
+
 #---------END---------#
 
 
@@ -331,5 +337,6 @@ profileDetailsButton.place(relx=0.75, rely=0, relwidth=0.25, relheight=0.05)
 
 
 repeatDueDeadlinesCall()
+repeatDueRemindersCall()
 
 tk.mainloop()
