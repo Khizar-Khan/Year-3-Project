@@ -12,7 +12,6 @@ class TaskManager:
         self.allReminders = []
         self.allDueReminders = []
 
-
     def setAllDueDeadlines(self):
         self.allDeadlines.clear()
         self.allIDs.clear()
@@ -74,3 +73,5 @@ class TaskManager:
     def getAllDueReminders(self):
         self.setAllDueReminders()
         return self.allDueReminders
+
+    

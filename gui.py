@@ -7,6 +7,7 @@ from tkcalendar import *
 
 from database import Database
 from taskmanager import TaskManager
+from time import strftime
 
 import re
 #---------END---------#
@@ -272,6 +273,28 @@ def repeatDueRemindersCall():
 
     root.after(1000, repeatDueRemindersCall)
 
+def dueDeadlinesWindow():
+    deadlinesWindow = tk.Toplevel()
+    deadlinesWindow.minsize(650,300)
+    deadlinesWindow.maxsize(650,300)
+    deadlinesWindow.title("Due Deadlines!")
+    deadlinesWindow.grab_set()
+
+    deadlinesList = tk.Listbox(deadlinesWindow)
+    deadlinesList.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.9)
+
+    storeAllDueDeadlines = tm.getAllDueDeadlines()
+
+    n = 1
+    while n < len(storeAllDueDeadlines):
+        profileName = str(db.fetchProfileById((storeAllDueDeadlines[n+1])))[2:-3]
+        taskDeadline = storeAllDueDeadlines[n-1]
+
+        deadlinesList.insert("end", "PROFILE: " + profileName + ", TASK: " + storeAllDueDeadlines[n] + ", DEADLINE: " + str(taskDeadline.strftime('%d-%m-%Y, %I:%M%p')))
+        n += 3
+
+
+
 #---------END---------#
 
 
@@ -335,8 +358,10 @@ profileDetailsButton = tk.Button(taskFrame, text="Profile Details", bg=taskButto
 profileDetailsButton.place(relx=0.75, rely=0, relwidth=0.25, relheight=0.05)
 #---------END---------#
 
-
 repeatDueDeadlinesCall()
 repeatDueRemindersCall()
+
+if len(tm.getAllDueDeadlines()) > 0:
+    dueDeadlinesWindow()
 
 tk.mainloop()
