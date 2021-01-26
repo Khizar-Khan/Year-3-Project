@@ -287,14 +287,19 @@ def dueDeadlinesWindow():
 
     n = 1
     while n < len(storeAllDueDeadlines):
-        profileName = str(db.fetchProfileById((storeAllDueDeadlines[n+1])))[2:-3]
+
+        profileName = str(db.fetchProfileById(storeAllDueDeadlines[n+1]))[2:-3]
         taskDeadline = storeAllDueDeadlines[n-1]
+        currentTask = storeAllDueDeadlines[n]
 
-        deadlinesList.insert("end", "PROFILE: " + profileName + ", TASK: " + storeAllDueDeadlines[n] + ", DEADLINE: " + str(taskDeadline.strftime('%d-%m-%Y, %I:%M%p')))
+        taskImportance = str(db.getIfTaskImportant(storeAllDueDeadlines[n+1], currentTask))[1:-2]
+
+        if taskImportance == "1":
+            deadlinesList.insert("end", " --IMPORTANT--" + " PROFILE: " + profileName + ", TASK: " + currentTask + ", DEADLINE: " + str(taskDeadline.strftime('%d-%m-%Y, %I:%M%p')))
+        else:
+            deadlinesList.insert("end", "PROFILE: " + profileName + ", TASK: " + currentTask + ", DEADLINE: " + str(taskDeadline.strftime('%d-%m-%Y, %I:%M%p')))
+        
         n += 3
-
-
-
 #---------END---------#
 
 
