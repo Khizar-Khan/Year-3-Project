@@ -35,6 +35,8 @@ minuteDropOptions = [
     "40", "41", "42", "43", "44", "45", "46", "47", "48", "49",
     "50", "51", "52", "53", "54", "55", "56", "57", "58", "59",
     ]
+
+dueDeadlinesAmount = 0
 #---------END---------#
 
 
@@ -165,7 +167,8 @@ def addTaskWindow():
 def removeTask():
     if profileCombo.get() == "":
         return
-    taskText = str(taskList.get("anchor"))
+    taskTextRaw = str(taskList.get("anchor"))
+    taskText = taskTextRaw.split(" | DEADLINE:", 1)[0]
     profileIndex = profileCombo.current()
     profileIDs = db.fetchIDs()
     profileID = profileIDs[profileIndex]
@@ -177,7 +180,8 @@ def taskDetailsWindow():
         messagebox.showinfo("Information", "You do not have a task selected!")
         return
 
-    task = taskList.get("anchor")
+    taskRaw = taskList.get("anchor")
+    task = taskRaw.split(" | DEADLINE:", 1)[0]
 
     taskDetailsWindow = tk.Toplevel()
     taskDetailsWindow.minsize(400,200)
@@ -254,7 +258,10 @@ def refreshTaskList():
 
     dbTaskList = db.fetchTasks(str(profileID)[2:-3])
     for item in dbTaskList:
-        taskList.insert("end", str(item)[2:-3])
+        if str(db.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3] == "0":
+            taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + "N/A")
+        else:
+            taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + str(db.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3])
 
 def refreshProfilesList():
     profiles.clear()
@@ -264,7 +271,15 @@ def refreshProfilesList():
             profiles.append(db.fetchProfileById(str(x)[2:-3]))
 
 def repeatDueDeadlinesCall():
+    global dueDeadlinesAmount
+
     print(tm.getAllDueDeadlines())
+
+    if tm.getAmountOfDueDeadlines() > dueDeadlinesAmount:
+        dueDeadlinesWindow()
+        dueDeadlinesAmount = tm.getAmountOfDueDeadlines()
+    else:
+        dueDeadlinesAmount = tm.getAmountOfDueDeadlines()
 
     root.after(1000, repeatDueDeadlinesCall)
 
@@ -276,7 +291,7 @@ def repeatDueRemindersCall():
 def dueDeadlinesWindow():
     deadlinesWindow = tk.Toplevel()
     deadlinesWindow.minsize(650,300)
-    deadlinesWindow.maxsize(650,300)
+    deadlinesWindow.maxsize(800,400)
     deadlinesWindow.title("Due Deadlines!")
     deadlinesWindow.grab_set()
 
@@ -365,8 +380,5 @@ profileDetailsButton.place(relx=0.75, rely=0, relwidth=0.25, relheight=0.05)
 
 repeatDueDeadlinesCall()
 repeatDueRemindersCall()
-
-if len(tm.getAllDueDeadlines()) > 0:
-    dueDeadlinesWindow()
 
 tk.mainloop()
