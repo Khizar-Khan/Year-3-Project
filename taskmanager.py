@@ -12,6 +12,7 @@ class TaskManager:
         self.allReminders = []
         self.allDueReminders = []
         self.amountOfDueDeadlines = 0
+        self.amountOfDueReminders = 0
 
     def setAllDueDeadlines(self):
         self.allDeadlines.clear()
@@ -78,3 +79,7 @@ class TaskManager:
     def getAmountOfDueDeadlines(self):
         self.amountOfDueDeadlines = len(self.allDueDeadlines)
         return (self.amountOfDueDeadlines/3)
+
+    def getAmountOfDueReminders(self):
+        self.amountOfDueReminders = len(self.allDueReminders)
+        return (self.amountOfDueReminders/3)

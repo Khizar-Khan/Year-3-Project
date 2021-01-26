@@ -37,6 +37,7 @@ minuteDropOptions = [
     ]
 
 dueDeadlinesAmount = 0
+dueRemindersAmount = 0
 #---------END---------#
 
 
@@ -284,7 +285,19 @@ def repeatDueDeadlinesCall():
     root.after(1000, repeatDueDeadlinesCall)
 
 def repeatDueRemindersCall():
-    print(tm.getAllDueReminders())
+    global dueRemindersAmount
+
+    storeAllDueReminders = tm.getAllDueReminders()
+    print(storeAllDueReminders)
+
+    if tm.getAmountOfDueReminders() > dueRemindersAmount:
+        for x in range(int(tm.getAmountOfDueReminders()*3))[::3]:
+            response = messagebox.showinfo("Reminder!", storeAllDueReminders[x+1])
+            db.setTaskDetail(storeAllDueReminders[x+2], storeAllDueReminders[x+1], 2, 0)
+
+        dueRemindersAmount = tm.getAmountOfDueReminders()
+    else:
+        dueRemindersAmount = tm.getAmountOfDueReminders()
 
     root.after(1000, repeatDueRemindersCall)
 
