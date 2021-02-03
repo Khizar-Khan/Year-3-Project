@@ -7,8 +7,10 @@ from tkcalendar import *
 
 from database import Database
 from taskmanager import TaskManager
+from voice import VoiceAssistant
 from time import strftime
 
+import threading
 import re
 #---------END---------#
 
@@ -23,6 +25,7 @@ taskButtonColour = "yellow"
 root = tk.Tk()
 db = Database("profile.db") 
 tm = TaskManager()
+va = VoiceAssistant()
 
 profileIDs = db.fetchIDs()
 profiles = []
@@ -50,13 +53,13 @@ def profileWindow():
         else:
             messagebox.showinfo("Information", "Enter name to create a profile!")
 
-        refreshProfilesList()
+        refreshProfilesList(db)
         profileCombo.config(values=profiles)
         if len(profiles) == 1:
             profileCombo.current(0)
 
         profileWindow.destroy()
-        refreshTaskList()
+        refreshTaskList(db)
 
     def deleteProfile():
         if profileCombo.get() == "":
@@ -69,7 +72,7 @@ def profileWindow():
         db.removeProfile(str(profileID)[2:-3])
         db.removeTasks(str(profileID)[2:-3])
 
-        refreshProfilesList()
+        refreshProfilesList(db)
         if len(profiles) != 0:
             profileCombo.config(values=profiles)
             profileCombo.current(0)
@@ -78,7 +81,7 @@ def profileWindow():
             profileCombo.current(0)
 
         profileWindow.destroy()
-        refreshTaskList()
+        refreshTaskList(db)
 
     def updateProfile():
         if profileCombo.get() == "":
@@ -150,7 +153,7 @@ def addTaskWindow():
             return
 
         db.insertTask(str(profileID)[2:-3], taskText)
-        refreshTaskList()
+        refreshTaskList(db)
         addTaskWindow.destroy()
 
     addTaskWindow = tk.Toplevel()
@@ -174,7 +177,7 @@ def removeTask():
     profileIDs = db.fetchIDs()
     profileID = profileIDs[profileIndex]
     db.removeTask(str(profileID)[2:-3], taskText)
-    refreshTaskList()
+    refreshTaskList(db)
 
 def taskDetailsWindow():
     if taskList.get("anchor") == "":
@@ -243,33 +246,33 @@ def setDetail(whichTask, whichDetail, inputDetail):
 
     db.setTaskDetail(str(profileID)[2:-3], whichTask, whichDetail, inputDetail)
 
-    refreshTaskList()
+    refreshTaskList(db)
 
 def selectedCombo(event):
-    refreshTaskList()
+    refreshTaskList(db)
 
-def refreshTaskList():
+def refreshTaskList(currentDatabase):
     if profileCombo.get() == "":
         taskList.delete(0,"end")
         return
     taskList.delete(0,"end")
     profileIndex = profileCombo.current()
-    profileIDs = db.fetchIDs()
+    profileIDs = currentDatabase.fetchIDs()
     profileID = profileIDs[profileIndex]
 
-    dbTaskList = db.fetchTasks(str(profileID)[2:-3])
+    dbTaskList = currentDatabase.fetchTasks(str(profileID)[2:-3])
     for item in dbTaskList:
-        if str(db.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3] == "0":
+        if str(currentDatabase.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3] == "0":
             taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + "N/A")
         else:
-            taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + str(db.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3])
+            taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + str(currentDatabase.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3])
 
-def refreshProfilesList():
+def refreshProfilesList(currentDatabase):
     profiles.clear()
-    profileIDs = db.fetchIDs()
+    profileIDs = currentDatabase.fetchIDs()
     if len(profileIDs) > 0:
         for x in profileIDs:
-            profiles.append(db.fetchProfileById(str(x)[2:-3]))
+            profiles.append(currentDatabase.fetchProfileById(str(x)[2:-3]))
 
 def repeatDueDeadlinesCall():
     global dueDeadlinesAmount
@@ -328,6 +331,41 @@ def dueDeadlinesWindow():
             deadlinesList.insert("end", "PROFILE: " + profileName + ", TASK: " + currentTask + ", DEADLINE: " + str(taskDeadline.strftime('%d-%m-%Y, %I:%M%p')))
         
         n += 3
+
+def voiceAssistant():
+    dbVA = Database("profile.db")
+    userCommand = va.interactWithUser()
+    
+    allProfileNames = dbVA.fetchProfileNames()
+
+    for name in allProfileNames:
+        if str(name)[2:-3] == userCommand[0]:
+            IDs = dbVA.fetchIDByName(str(name)[2:-3])
+
+            if userCommand[2] == "add task":
+                for id in IDs:
+                    dbVA.insertTask(str(id)[2:-3], userCommand[1])
+            elif userCommand[2] == "remove task":
+                for id in IDs:
+                    dbVA.removeTask(str(id)[2:-3], userCommand[1])
+            elif userCommand[2] == "remove profile":
+                for id in IDs:
+                    dbVA.removeProfile(str(id)[2:-3])
+
+    if userCommand[2] == "add profile":
+        dbVA.insertProfile(re.sub('[\W_]+', '', userCommand[0]))
+
+
+    # Refresh
+    refreshProfilesList(dbVA)
+    profileCombo.config(values=profiles)
+    if len(profiles) == 0:
+        profileCombo.config(values=[""])
+        profileCombo.current(0)
+    elif len(profiles) == 1:
+        profileCombo.current(0)
+        
+    refreshTaskList(dbVA)
 #---------END---------#
 
 
@@ -349,7 +387,7 @@ userFrame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.05)
 
 # Combobox
 if len(profileIDs) != 0:
-    refreshProfilesList()
+    refreshProfilesList(db)
     profileCombo = ttk.Combobox(userFrame, state="readonly", value=profiles)
     profileCombo.current(0)
 else:
@@ -366,7 +404,7 @@ taskFrame.place(relx=0.05, rely=0.125, relwidth=0.9, relheight=0.825)
 # Listbox for tasks
 taskList = tk.Listbox(taskFrame)
 taskList.place(relx=0, rely=0.05, relwidth=1, relheight=1)
-refreshTaskList()
+refreshTaskList(db)
 
 # Scrollbar for task list
 scrollbar = tk.Scrollbar(taskList)
@@ -393,5 +431,7 @@ profileDetailsButton.place(relx=0.75, rely=0, relwidth=0.25, relheight=0.05)
 
 repeatDueDeadlinesCall()
 repeatDueRemindersCall()
+
+threading.Thread(target=voiceAssistant).start()
 
 tk.mainloop()

@@ -17,6 +17,16 @@ class Database:
         self.conn.commit()
 
     # Profiles
+    def fetchProfileNames(self):
+        self.c.execute("SELECT name FROM profiles")
+        profileNames = self.c.fetchall()
+        return profileNames
+
+    def fetchIDByName(self, name):
+        self.c.execute("SELECT id FROM profiles WHERE name=?", (name,))
+        profileID = self.c.fetchall()
+        return profileID
+
     def fetchIDs(self):
         self.c.execute("SELECT id FROM profiles")
         ids = self.c.fetchall()
