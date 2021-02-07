@@ -351,6 +351,14 @@ def voiceAssistant():
             elif userCommand[2] == "remove profile":
                 for id in IDs:
                     dbVA.removeProfile(str(id)[2:-3])
+            elif userCommand[2] == "set deadline":
+                for id in IDs:
+                    pass
+                    year = userCommand[3]
+                    month = userCommand[4]
+                    day = userCommand[5]
+
+                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 1, correctDateFormat(day, month, year))
 
     if userCommand[2] == "add profile":
         dbVA.insertProfile(re.sub('[\W_]+', '', userCommand[0]))
@@ -366,6 +374,103 @@ def voiceAssistant():
         profileCombo.current(0)
         
     refreshTaskList(dbVA)
+
+def correctDateFormat(day, month, year):
+    if day == "one" or day == "1st" or day == "first" or day == "1":
+        formattedDay = "01"
+    elif day == "two" or day == "2nd" or day == "second" or day == "2":
+        formattedDay = "02"
+    elif day == "three" or day == "3rd" or day == "third" or day == "3":
+        formattedDay = "03"
+    elif day == "four" or day == "4th" or day == "fourth" or day == "4":
+        formattedDay = "04"
+    elif day == "five" or day == "5th" or day == "fifth" or day == "5":
+        formattedDay = "05"
+    elif day == "six" or day == "6th" or day == "sixth" or day == "6":
+        formattedDay = "06"
+    elif day == "seven" or day == "7th" or day == "seventh" or day == "7":
+        formattedDay = "07"
+    elif day == "eight" or day == "8th" or day == "eighth" or day == "8":
+        formattedDay = "08"
+    elif day == "nine" or day == "9th" or day == "ninth" or day == "9":
+        formattedDay = "09"
+    elif day == "ten" or day == "10th" or day == "tenth" or day == "10":
+        formattedDay = "10"
+    elif day == "eleven" or day == "11th" or day == "eleventh" or day == "11":
+        formattedDay = "11"
+    elif day == "twelve" or day == "12th" or day == "twelfth" or day == "12":
+        formattedDay = "12"
+    elif day == "thirteen" or day == "13th" or day == "thirteenth" or day == "13":
+        formattedDay = "13"
+    elif day == "fourteen" or day == "14th" or day == "fourteenth" or day == "14":
+        formattedDay = "14"
+    elif day == "fifteen" or day == "15th" or day == "fifteenth" or day == "15":
+        formattedDay = "15"
+    elif day == "sixteen" or day == "16th" or day == "sixteenth" or day == "16":
+        formattedDay = "16"
+    elif day == "seventeen" or day == "17th" or day == "seventeenth" or day == "17":
+        formattedDay = "17"
+    elif day == "eighteen" or day == "18th" or day == "eighteenth" or day == "18":
+        formattedDay = "18"
+    elif day == "nineteen" or day == "19th" or day == "nineteenth" or day == "19":
+        formattedDay = "19"
+    elif day == "twenty" or day == "20th" or day == "twentieth" or day == "20":
+        formattedDay = "20"
+    elif day == "twenty one" or day == "21st" or day == "twenty first" or day == "21":
+        formattedDay = "21"
+    elif day == "twenty two" or day == "22nd" or day == "twenty second" or day == "22":
+        formattedDay = "22"
+    elif day == "twenty three" or day == "23rd" or day == "twenty third" or day == "23":
+        formattedDay = "23"
+    elif day == "twenty four" or day == "24th" or day == "twenty fourth" or day == "24":
+        formattedDay = "24"
+    elif day == "twenty five" or day == "25th" or day == "twenty fifth" or day == "25":
+        formattedDay = "25"
+    elif day == "twenty six" or day == "26th" or day == "twenty sixth" or day == "26":
+        formattedDay = "26"
+    elif day == "twenty seven" or day == "27th" or day == "twenty seventh" or day == "27":
+        formattedDay = "27"
+    elif day == "twenty eight" or day == "28th" or day == "twenty eighth" or day == "28":
+        formattedDay = "28"
+    elif day == "twenty nine" or day == "29th" or day == "twenty ninth" or day == "29":
+        formattedDay = "29"
+    elif day == "thirty" or day == "30th" or day == "thirtieth" or day == "30":
+        formattedDay = "30"
+    elif day == "thirty one" or day == "31st" or day == "thirty first" or day == "31":
+        formattedDay = "31"
+    else:
+        formattedDay = "01"
+
+    if month == "january":
+        formattedMonth = "01"
+    elif month == "february":
+        formmattedMonthh = "02"
+    elif month == "march":
+        formmattedMonthh = "03"
+    elif month == "april":
+        formmattedMonthh = "04"
+    elif month == "may":
+        formmattedMonthh = "05"
+    elif month == "june":
+        formmattedMonthh = "06"
+    elif month == "july":
+        formmattedMonthh = "07"
+    elif month == "august":
+        formmattedMonthh = "08"
+    elif month == "september":
+        formmattedMonthh = "09"
+    elif month == "october":
+        formmattedMonthh = "10"
+    elif month == "november":
+        formmattedMonthh = "11"
+    elif month == "december":
+        formmattedMonthh = "12"
+    else:
+        formattedMonth = "01"
+
+    return formattedDay + "/" + formattedMonth + "/" + year + " 12:00 PM"
+    
+        
 #---------END---------#
 
 

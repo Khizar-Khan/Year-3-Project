@@ -63,3 +63,21 @@ class VoiceAssistant:
             profileName = self.getAudio()
 
             return profileName, " ", "remove profile"
+
+        if "set deadline" in text:
+            self.speak("sure, which profile is this task for?")
+            profileName = self.getAudio()
+
+            self.speak("which task should I set the deadline for?")
+            taskName = self.getAudio()
+
+            self.speak("Which year would you like the deadline to be.")
+            deadlineYear = self.getAudio()
+
+            self.speak("Which month would you like the deadline to be.")
+            deadlineMonth = self.getAudio()
+
+            self.speak("Which day would you like the deadline to be.")
+            deadlineDay = self.getAudio()
+
+            return profileName, taskName, "set deadline", deadlineYear, deadlineMonth, deadlineDay
