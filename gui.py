@@ -41,6 +41,15 @@ minuteDropOptions = [
 
 dueDeadlinesAmount = 0
 dueRemindersAmount = 0
+
+# Colour
+rootBackgroundColour = "#e5ffde"
+borderColour = "#a2ff8a"
+
+# Button Images
+createProfileImage = tk.PhotoImage(file="Images/Create Profile Button.png")
+updateProfileImage = tk.PhotoImage(file="Images/Change Name Button.png")
+deleteProfileImage = tk.PhotoImage(file="Images/Delete Profile Button.png")
 #---------END---------#
 
 
@@ -97,7 +106,7 @@ def profileWindow():
         else:
             messagebox.showinfo("Information", "Enter name to update a profile!")
 
-        refreshProfilesList()
+        refreshProfilesList(db)
         profileCombo.config(values=profiles)
         if len(profiles) == 1:
             profileCombo.current(0)
@@ -111,22 +120,37 @@ def profileWindow():
     profileWindow.minsize(350,150)
     profileWindow.maxsize(350,150)
     profileWindow.title("Profile Details")
+    profileWindow.attributes("-alpha", 0.95)
+    profileWindow.configure(background=rootBackgroundColour)
     profileWindow.grab_set()
 
-    inputCreate = tk.Entry(profileWindow)
-    inputCreate.pack()
+    inputCreateFrame = tk.Frame(profileWindow, bg=borderColour)
+    inputCreateFrame.place(relx=0.05, rely=0.125, relwidth=0.4, relheight=0.15)
+    inputCreate = tk.Entry(inputCreateFrame, borderwidth=0)
+    inputCreate.place(relx=0.025, rely=0.15, relwidth=0.95, relheight=0.7)
 
-    inputUpdate = tk.Entry(profileWindow)
-    inputUpdate.pack()
+    inputUpdateFrame = tk.Frame(profileWindow, bg=borderColour)
+    inputUpdateFrame.place(relx=0.05, rely=0.4, relwidth=0.4, relheight=0.15)
+    inputUpdate = tk.Entry(inputUpdateFrame, borderwidth=0)
+    inputUpdate.place(relx=0.025, rely=0.15, relwidth=0.95, relheight=0.7)
 
-    createProfileButton = tk.Button(profileWindow, text="Create Profile", command=createProfile)
-    createProfileButton.pack()
+    currentProfileFrame = tk.Frame(profileWindow, bg=borderColour)
+    currentProfileFrame.place(relx=0.05, rely=0.675, relwidth=0.4, relheight=0.15)
+    if profileCombo.get() == "":
+        currentProfile = "N/A"
+    else:
+        currentProfile = profileCombo.get()
+    currentProfileLabel = tk.Label(currentProfileFrame, text="Profile: "+currentProfile, bg="white")
+    currentProfileLabel.place(relx=0.025, rely=0.15, relwidth=0.95, relheight=0.7)
 
-    updateProfileButton = tk.Button(profileWindow, text="Change Profile Name", command=updateProfile)
-    updateProfileButton.pack()
+    createProfileButton = tk.Button(profileWindow, image=createProfileImage, command=createProfile, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    createProfileButton.place(relx=0.55, rely=0.075, relwidth=0.45, relheight=0.25)
 
-    deleteProfileButton = tk.Button(profileWindow, text="Delete Profile", command=deleteProfile)
-    deleteProfileButton.pack()
+    updateProfileButton = tk.Button(profileWindow, image=updateProfileImage, command=updateProfile, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    updateProfileButton.place(relx=0.55, rely=0.35, relwidth=0.45, relheight=0.25)
+
+    deleteProfileButton = tk.Button(profileWindow, image=deleteProfileImage, command=deleteProfile, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    deleteProfileButton.place(relx=0.55, rely=0.625, relwidth=0.45, relheight=0.25)
 
 def addTaskWindow():
     if profileCombo.get() == "":
@@ -160,13 +184,18 @@ def addTaskWindow():
     addTaskWindow.minsize(350,150)
     addTaskWindow.maxsize(350,150)
     addTaskWindow.title("Add Task")
+    addTaskWindow.attributes("-alpha", 0.95)
+    addTaskWindow.configure(background=rootBackgroundColour)
     addTaskWindow.grab_set()
 
-    input = tk.Entry(addTaskWindow)
-    input.pack()
+    addTaskFrame = tk.Frame(addTaskWindow, bg=borderColour)
+    addTaskFrame.place(relx=0.05, rely=0.125, relwidth=0.9, relheight=0.15)
+    input = tk.Entry(addTaskFrame, borderwidth=0)
+    input.place(relx=0.01, rely=0.15, relwidth=0.98, relheight=0.7)
 
-    addTaskButton = tk.Button(addTaskWindow, text="Add Task", command=addTask)
-    addTaskButton.pack()
+    addTaskButton = tk.Button(addTaskWindow, image=addTaskImage, command=addTask, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    addTaskButton.place(relx=0.3, rely=0.35, relwidth=0.4, relheight=0.2)
+
 
 def removeTask():
     if profileCombo.get() == "":
@@ -489,6 +518,7 @@ root.maxsize(int(windowHeight*maxWindowMultiplier), int(windowWidth*maxWindowMul
 root.title("Family Organiser")
 root.iconphoto(True, tk.PhotoImage(file="Images/Icon.png"))
 root.geometry(str(windowHeight)+"x"+str(windowWidth))
+root.configure(background=rootBackgroundColour)
 
 radioMeridian = tk.IntVar(value="1")
 #---------END---------#
@@ -496,7 +526,7 @@ radioMeridian = tk.IntVar(value="1")
 
 #-----COMPONENTS-----#
 # User profile section
-userFrame = tk.Frame(root, bg="#cce6ff")
+userFrame = tk.Frame(root, bg=borderColour)
 userFrame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.05)
 
 # Combobox
@@ -508,38 +538,42 @@ else:
     profileCombo = ttk.Combobox(userFrame, state="readonly", value=[""])
     profileCombo.current(0)
 
-profileCombo.place(relx=0, rely=0, relwidth=1, relheight=1)
+profileCombo.place(relx=0.005, rely=0.05, relwidth=0.99, relheight=0.9)
 profileCombo.bind("<<ComboboxSelected>>", selectedCombo)
 
 # Task view section
-taskFrame = tk.Frame(root, bg="#b3d9ff")
+taskFrame = tk.Frame(root, bg=borderColour)
 taskFrame.place(relx=0.05, rely=0.125, relwidth=0.9, relheight=0.825)
 
 # Listbox for tasks
-taskList = tk.Listbox(taskFrame)
-taskList.place(relx=0, rely=0.05, relwidth=1, relheight=1)
+taskList = tk.Listbox(taskFrame, borderwidth=0)
+taskList.place(relx=0.005, rely=0.055, relwidth=0.99, relheight=0.94)
 refreshTaskList(db)
 
 # Scrollbar for task list
 scrollbar = tk.Scrollbar(taskList)
-scrollbar.place(relx=0.975, rely=0, relwidth=0.025, relheight=0.95)
+scrollbar.place(relx=0.975, rely=0, relwidth=0.025, relheight=1)
 taskList.configure(yscrollcommand=scrollbar.set)
 scrollbar.configure(command=taskList.yview)
 
 # Button: Add task
-addTaskButton = tk.Button(taskFrame, text="Add Task", bg=taskButtonColour, command=addTaskWindow)
+addTaskImage = tk.PhotoImage(file="Images/Add Task Button.png")
+addTaskButton = tk.Button(taskFrame, image=addTaskImage, command=addTaskWindow, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
 addTaskButton.place(relx=0, rely=0, relwidth=0.25, relheight=0.05)
 
 # Button: Remove task
-removeTaskButton = tk.Button(taskFrame, text="Remove Task", bg=taskButtonColour, command=removeTask)
+removeTaskImage = tk.PhotoImage(file="Images/Remove Task Button.png")
+removeTaskButton = tk.Button(taskFrame, image=removeTaskImage, command=removeTask, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
 removeTaskButton.place(relx=0.25, rely=0, relwidth=0.25, relheight=0.05)
 
 # Button: Task details
-taskDetailsButton = tk.Button(taskFrame, text="Task Details", bg=taskButtonColour, command=taskDetailsWindow)
+taskDetailsImage = tk.PhotoImage(file="Images/Task Details Button.png")
+taskDetailsButton = tk.Button(taskFrame, image=taskDetailsImage, command=taskDetailsWindow, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
 taskDetailsButton.place(relx=0.50, rely=0, relwidth=0.25, relheight=0.05)
 
 # Button: Profile Details
-profileDetailsButton = tk.Button(taskFrame, text="Profile Details", bg=taskButtonColour, command=profileWindow)
+profileDetailsImage = tk.PhotoImage(file="Images/Profile Details Button.png")
+profileDetailsButton = tk.Button(taskFrame, image=profileDetailsImage, command=profileWindow, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
 profileDetailsButton.place(relx=0.75, rely=0, relwidth=0.25, relheight=0.05)
 #---------END---------#
 
