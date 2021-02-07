@@ -365,6 +365,9 @@ def voiceAssistant():
                     day = userCommand[5]
 
                     dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 2, correctDateFormat(day, month, year))
+            elif userCommand[2] == "set important task":
+                for id in IDs:
+                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 4, 1)
 
     if userCommand[2] == "add profile":
         dbVA.insertProfile(re.sub('[\W_]+', '', userCommand[0]))
