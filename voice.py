@@ -81,3 +81,21 @@ class VoiceAssistant:
             deadlineDay = self.getAudio()
 
             return profileName, taskName, "set deadline", deadlineYear, deadlineMonth, deadlineDay
+
+        if "set reminder" in text:
+            self.speak("sure, which profile is this task for?")
+            profileName = self.getAudio()
+
+            self.speak("which task should I set the reminder for?")
+            taskName = self.getAudio()
+
+            self.speak("Which year would you like the reminder to be.")
+            reminderYear = self.getAudio()
+
+            self.speak("Which month would you like the reminder to be.")
+            reminderMonth = self.getAudio()
+
+            self.speak("Which day would you like the reminder to be.")
+            reminderDay = self.getAudio()
+
+            return profileName, taskName, "set reminder", reminderYear, reminderMonth, reminderDay

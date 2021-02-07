@@ -353,12 +353,18 @@ def voiceAssistant():
                     dbVA.removeProfile(str(id)[2:-3])
             elif userCommand[2] == "set deadline":
                 for id in IDs:
-                    pass
                     year = userCommand[3]
                     month = userCommand[4]
                     day = userCommand[5]
 
                     dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 1, correctDateFormat(day, month, year))
+            elif userCommand[2] == "set reminder":
+                for id in IDs:
+                    year = userCommand[3]
+                    month = userCommand[4]
+                    day = userCommand[5]
+
+                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 2, correctDateFormat(day, month, year))
 
     if userCommand[2] == "add profile":
         dbVA.insertProfile(re.sub('[\W_]+', '', userCommand[0]))
@@ -441,36 +447,36 @@ def correctDateFormat(day, month, year):
     else:
         formattedDay = "01"
 
-    if month == "january":
+    if month == "January":
         formattedMonth = "01"
-    elif month == "february":
-        formmattedMonthh = "02"
-    elif month == "march":
-        formmattedMonthh = "03"
-    elif month == "april":
-        formmattedMonthh = "04"
-    elif month == "may":
-        formmattedMonthh = "05"
-    elif month == "june":
-        formmattedMonthh = "06"
-    elif month == "july":
-        formmattedMonthh = "07"
-    elif month == "august":
-        formmattedMonthh = "08"
-    elif month == "september":
-        formmattedMonthh = "09"
-    elif month == "october":
-        formmattedMonthh = "10"
-    elif month == "november":
-        formmattedMonthh = "11"
-    elif month == "december":
-        formmattedMonthh = "12"
+    elif month == "February":
+        formattedMonth = "02"
+    elif month == "March":
+        formattedMonth = "03"
+    elif month == "April":
+        formattedMonth = "04"
+    elif month == "May":
+        formattedMonth = "05"
+    elif month == "June":
+        formattedMonth = "06"
+    elif month == "July":
+        formattedMonth = "07"
+    elif month == "August":
+        formattedMonth = "08"
+    elif month == "September":
+        formattedMonth = "09"
+    elif month == "October":
+        formattedMonth = "10"
+    elif month == "November":
+        formattedMonth = "11"
+    elif month == "December":
+        formattedMonth = "12"
     else:
         formattedMonth = "01"
 
-    return formattedDay + "/" + formattedMonth + "/" + year + " 12:00 PM"
-    
-        
+    formattedYear = re.sub('[\W_]+', '', year)
+
+    return formattedDay + "/" + formattedMonth + "/" + formattedYear + " 12:00 PM"  
 #---------END---------#
 
 
