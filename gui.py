@@ -50,6 +50,10 @@ borderColour = "#a2ff8a"
 createProfileImage = tk.PhotoImage(file="Images/Create Profile Button.png")
 updateProfileImage = tk.PhotoImage(file="Images/Change Name Button.png")
 deleteProfileImage = tk.PhotoImage(file="Images/Delete Profile Button.png")
+setDeadlineImage = tk.PhotoImage(file="Images/Set Deadline Button.png")
+setReminderImage = tk.PhotoImage(file="Images/Set Reminder Button.png")
+importantImage = tk.PhotoImage(file="Images/Important Button.png")
+setImage = tk.PhotoImage(file="Images/Set Button.png")
 #---------END---------#
 
 
@@ -196,7 +200,6 @@ def addTaskWindow():
     addTaskButton = tk.Button(addTaskWindow, image=addTaskImage, command=addTask, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
     addTaskButton.place(relx=0.3, rely=0.35, relwidth=0.4, relheight=0.2)
 
-
 def removeTask():
     if profileCombo.get() == "":
         return
@@ -220,53 +223,53 @@ def taskDetailsWindow():
     taskDetailsWindow.minsize(400,200)
     taskDetailsWindow.maxsize(400,200)
     taskDetailsWindow.title("Task Details")
+    taskDetailsWindow.attributes("-alpha", 0.95)
+    taskDetailsWindow.configure(background=rootBackgroundColour)
     taskDetailsWindow.grab_set()
 
-    deadlineButton = tk.Button(taskDetailsWindow, text="Set Deadline", command=lambda:[calendarWindow(task, 1), taskDetailsWindow.destroy()])
-    deadlineButton.pack()
+    deadlineButton = tk.Button(taskDetailsWindow, image=setDeadlineImage, command=lambda:[calendarWindow(task, 1), taskDetailsWindow.destroy()], borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    deadlineButton.place(relx=0.3, rely=0.1, relwidth=0.4, relheight=0.15)
 
-    reminderButton = tk.Button(taskDetailsWindow, text="Set Reminder", command=lambda:[calendarWindow(task, 2), taskDetailsWindow.destroy()])
-    reminderButton.pack()
+    reminderButton = tk.Button(taskDetailsWindow, image=setReminderImage, command=lambda:[calendarWindow(task, 2), taskDetailsWindow.destroy()], borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    reminderButton.place(relx=0.3, rely=0.275, relwidth=0.4, relheight=0.15)
 
     profileIndex = profileCombo.current()
     profileIDs = db.fetchIDs()
     profileID = profileIDs[profileIndex]
 
-    recurringActive = IntVar()
-    recurringActive.set(db.getIfTaskRecurring(str(profileID)[2:-3], task))
-    setRecurringCheck = tk.Checkbutton(taskDetailsWindow, text="Set Recurring", variable=recurringActive, command=lambda:setDetail(task,3,recurringActive.get()))
-    setRecurringCheck.pack()
-
     importantActive = IntVar()
     importantActive.set(db.getIfTaskImportant(str(profileID)[2:-3], task))
-    setImportantCheck = tk.Checkbutton(taskDetailsWindow, text="Set as Important", variable=importantActive, command=lambda:setDetail(task,4,importantActive.get()))
-    setImportantCheck.pack()
+    setImportantCheck = tk.Checkbutton(taskDetailsWindow, image=importantImage, variable=importantActive, command=lambda:setDetail(task,4,importantActive.get()), borderwidth=0, bg="#15d798", activebackground="#15d798")
+    setImportantCheck.place(relx=0.3, rely=0.625, relwidth=0.4, relheight=0.25)
 
 def calendarWindow(whichTask, whichDetail):
     calendarWindow = tk.Toplevel()
     calendarWindow.minsize(400,400)
     calendarWindow.maxsize(400,400)
     calendarWindow.title("Calendar")
+    calendarWindow.attributes("-alpha", 0.95)
+    calendarWindow.configure(background=rootBackgroundColour)
     calendarWindow.grab_set()
 
-    cal = Calendar(calendarWindow, selectmode="day", year=2021, month=1, day=16)
-    cal.pack(fill = "both", expand =True)
+    today = tm.getTodaysDate()
+    cal = Calendar(calendarWindow, selectmode="day", year=today.year, month=today.month, day=today.day)
+    cal.place(relwidth=1, relheight=0.75)
 
     hourDrop = ttk.Combobox(calendarWindow, state="readonly", value=hourDropOptions)
     hourDrop.current(11)
-    hourDrop.pack()
+    hourDrop.place(relx=0.350, rely=0.775, relwidth=0.15, relheight=0.05)
 
     minuteDrop = ttk.Combobox(calendarWindow, state="readonly", value=minuteDropOptions)
     minuteDrop.current(0)
-    minuteDrop.pack()
+    minuteDrop.place(relx=0.500, rely=0.775, relwidth=0.15, relheight=0.05)
 
-    radioCheckPM = tk.Radiobutton(calendarWindow, text="PM", variable=radioMeridian, value=1)
-    radioCheckPM.pack()
-    radioCheckAM = tk.Radiobutton(calendarWindow, text="AM", variable=radioMeridian, value=2)
-    radioCheckAM.pack()
+    radioCheckPM = tk.Radiobutton(calendarWindow, text="PM", variable=radioMeridian, value=1, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    radioCheckPM.place(relx=0.350, rely=0.83, relwidth=0.15, relheight=0.05)
+    radioCheckAM = tk.Radiobutton(calendarWindow, text="AM", variable=radioMeridian, value=2, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    radioCheckAM.place(relx=0.500, rely=0.83, relwidth=0.15, relheight=0.05)
 
-    setDetailButton = tk.Button(calendarWindow, text="Set", command=lambda:[setDetail(whichTask,whichDetail,cal.get_date()+" "+str(hourDrop.get())+":"+str(minuteDrop.get())+" "+("PM" if str(radioMeridian.get()) == "1" else "AM")), calendarWindow.destroy()])
-    setDetailButton.pack(pady=20)
+    setDetailButton = tk.Button(calendarWindow, image=setImage, command=lambda:[setDetail(whichTask,whichDetail,cal.get_date()+" "+str(hourDrop.get())+":"+str(minuteDrop.get())+" "+("PM" if str(radioMeridian.get()) == "1" else "AM")), calendarWindow.destroy()], borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    setDetailButton.place(relx=0.325, rely=0.8875, relwidth=0.35, relheight=0.075)
 
 def setDetail(whichTask, whichDetail, inputDetail):
     profileIndex = profileCombo.current()

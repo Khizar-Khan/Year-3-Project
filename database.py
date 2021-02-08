@@ -11,7 +11,7 @@ class Database:
 
         # Create table
         self.c.execute("CREATE TABLE IF NOT EXISTS profiles (id text, name text)")
-        self.c.execute("CREATE TABLE IF NOT EXISTS tasks (id text, task text, deadline TEXT, reminder TEXT, recurring INTEGER, important INTEGER)")
+        self.c.execute("CREATE TABLE IF NOT EXISTS tasks (id text, task text, deadline TEXT, reminder TEXT, important INTEGER)")
 
         # Commit
         self.conn.commit()
@@ -57,7 +57,7 @@ class Database:
         return tasks
 
     def insertTask(self, id, task):
-        self.c.execute("INSERT INTO tasks (id, task, deadline, reminder, recurring, important) VALUES (?,?,0,0,0,0)", (id, task))
+        self.c.execute("INSERT INTO tasks (id, task, deadline, reminder, important) VALUES (?,?,0,0,0)", (id, task))
         self.conn.commit()
 
     def removeTask(self, id, task):
@@ -77,10 +77,6 @@ class Database:
             self.c.execute("UPDATE tasks SET reminder=? WHERE id=? AND task=?", (setDetail, id, task))
             self.conn.commit()
             pass
-        elif whichDetail == 3:
-            self.c.execute("UPDATE tasks SET recurring=? WHERE id=? AND task=?", (setDetail, id, task))
-            self.conn.commit()
-            pass
         elif whichDetail == 4:
             self.c.execute("UPDATE tasks SET important=? WHERE id=? AND task=?", (setDetail, id, task))
             self.conn.commit()
@@ -88,10 +84,6 @@ class Database:
         else:
             return
 
-    def getIfTaskRecurring(self, id, task):
-        self.c.execute("SELECT recurring FROM tasks WHERE id=? AND task=?", (id, task))
-        recurring = self.c.fetchone()
-        return recurring
 
     def getIfTaskImportant(self, id, task):
         self.c.execute("SELECT important FROM tasks WHERE id=? AND task=?", (id, task))

@@ -83,3 +83,6 @@ class TaskManager:
     def getAmountOfDueReminders(self):
         self.amountOfDueReminders = len(self.allDueReminders)
         return (self.amountOfDueReminders/3)
+    
+    def getTodaysDate(self):
+        return datetime.today()
