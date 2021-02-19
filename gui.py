@@ -599,6 +599,8 @@ profileDetailsButton.place(relx=0.75, rely=0, relwidth=0.25, relheight=0.05)
 repeatDueDeadlinesCall()
 repeatDueRemindersCall()
 
-threading.Thread(target=voiceAssistant).start()
+a = threading.Thread(target=voiceAssistant)
+a.setDaemon(True)
+a.start()
 
 tk.mainloop()
