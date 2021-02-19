@@ -16,6 +16,8 @@ import re
 
 
 #------VARIABLES------#
+voiceAssistantActive = 0
+
 windowHeight = 600
 windowWidth = 700
 maxWindowMultiplier = 1.25
@@ -366,55 +368,69 @@ def dueDeadlinesWindow():
 
 def voiceAssistant():
     dbVA = Database("profile.db")
-    userCommand = va.interactWithUser()
     
-    allProfileNames = dbVA.fetchProfileNames()
+    while True:
+        text = va.getAudio()
 
-    for name in allProfileNames:
-        if str(name)[2:-3] == userCommand[0]:
-            IDs = dbVA.fetchIDByName(str(name)[2:-3])
+        if "hey robot" in text:
+            va.speak("Hello, what can I do for you?")
+            global voiceAssistantActive
+            voiceAssistantActive = 1
 
-            if userCommand[2] == "add task":
-                for id in IDs:
-                    dbVA.insertTask(str(id)[2:-3], userCommand[1])
-            elif userCommand[2] == "remove task":
-                for id in IDs:
-                    dbVA.removeTask(str(id)[2:-3], userCommand[1])
-            elif userCommand[2] == "remove profile":
-                for id in IDs:
-                    dbVA.removeProfile(str(id)[2:-3])
-            elif userCommand[2] == "set deadline":
-                for id in IDs:
-                    year = userCommand[3]
-                    month = userCommand[4]
-                    day = userCommand[5]
+            while voiceAssistantActive == 1:
+                allProfileNames = dbVA.fetchProfileNames()
+                userCommand = va.interactWithUser()
 
-                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 1, correctDateFormat(day, month, year))
-            elif userCommand[2] == "set reminder":
-                for id in IDs:
-                    year = userCommand[3]
-                    month = userCommand[4]
-                    day = userCommand[5]
+                try:
+                    for name in allProfileNames:
+                        if str(name)[2:-3] == userCommand[0]:
+                            IDs = dbVA.fetchIDByName(str(name)[2:-3])
 
-                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 2, correctDateFormat(day, month, year))
-            elif userCommand[2] == "set important task":
-                for id in IDs:
-                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 4, 1)
+                            if userCommand[2] == "add task":
+                                for id in IDs:
+                                    dbVA.insertTask(str(id)[2:-3], userCommand[1])
+                            elif userCommand[2] == "remove task":
+                                for id in IDs:
+                                    dbVA.removeTask(str(id)[2:-3], userCommand[1])
+                            elif userCommand[2] == "remove profile":
+                                for id in IDs:
+                                    dbVA.removeProfile(str(id)[2:-3])
+                            elif userCommand[2] == "set deadline":
+                                for id in IDs:
+                                    year = userCommand[3]
+                                    month = userCommand[4]
+                                    day = userCommand[5]
 
-    if userCommand[2] == "add profile":
-        dbVA.insertProfile(re.sub('[\W_]+', '', userCommand[0]))
+                                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 1, correctDateFormat(day, month, year))
+                            elif userCommand[2] == "set reminder":
+                                for id in IDs:
+                                    year = userCommand[3]
+                                    month = userCommand[4]
+                                    day = userCommand[5]
 
+                                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 2, correctDateFormat(day, month, year))
+                            elif userCommand[2] == "set important task":
+                                for id in IDs:
+                                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 4, 1)
 
-    # Refresh
-    refreshProfilesList(dbVA)
-    profileCombo.config(values=profiles)
-    if len(profiles) == 0:
-        profileCombo.config(values=[""])
-        profileCombo.current(0)
-    elif len(profiles) == 1:
-        profileCombo.current(0)
-        
-    refreshTaskList(dbVA)
+                    if userCommand[2] == "add profile":
+                        dbVA.insertProfile(re.sub('[\W_]+', '', userCommand[0]))
+
+                    if userCommand[2] == "exit":
+                        voiceAssistantActive = 0
+                except:
+                    pass
+
+                # Refresh
+                refreshProfilesList(dbVA)
+                profileCombo.config(values=profiles)
+                if len(profiles) == 0:
+                    profileCombo.config(values=[""])
+                    profileCombo.current(0)
+                elif len(profiles) == 1:
+                    profileCombo.current(0)
+                    
+                refreshTaskList(dbVA)
 
 def correctDateFormat(day, month, year):
     if day == "one" or day == "1st" or day == "first" or day == "1":

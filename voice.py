@@ -43,7 +43,7 @@ class VoiceAssistant:
 
             return profileName, taskName, "add task"
 
-        if "remove task" in text:
+        elif "remove task" in text:
             self.speak("sure, who's task would you like to remove?")
             profileName = self.getAudio()
 
@@ -52,19 +52,19 @@ class VoiceAssistant:
 
             return profileName, taskName, "remove task"
 
-        if "add profile" in text:
+        elif "add profile" in text:
             self.speak("sure, what name should this profile have?")
             profileName = self.getAudio()
 
             return profileName, " ", "add profile"
 
-        if "remove profile" in text:
+        elif "remove profile" in text:
             self.speak("sure, what profile should I remove?")
             profileName = self.getAudio()
 
             return profileName, " ", "remove profile"
 
-        if "set deadline" in text:
+        elif "set deadline" in text:
             self.speak("sure, which profile is this task for?")
             profileName = self.getAudio()
 
@@ -82,7 +82,7 @@ class VoiceAssistant:
 
             return profileName, taskName, "set deadline", deadlineYear, deadlineMonth, deadlineDay
 
-        if "set reminder" in text or "set a reminder" in text:
+        elif "set reminder" in text or "set a reminder" in text:
             self.speak("sure, which profile is this task for?")
             profileName = self.getAudio()
 
@@ -100,7 +100,7 @@ class VoiceAssistant:
 
             return profileName, taskName, "set reminder", reminderYear, reminderMonth, reminderDay
 
-        if "set important task" in text:
+        elif "set important task" in text:
             self.speak("sure, which profile is this task for?")
             profileName = self.getAudio()
 
@@ -108,3 +108,7 @@ class VoiceAssistant:
             taskName = self.getAudio()
 
             return profileName, taskName, "set important task"
+
+        elif "robot exit" in text:
+            self.speak("Goodbye")
+            return "", "", "exit"
