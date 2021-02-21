@@ -109,6 +109,12 @@ class VoiceAssistant:
 
             return profileName, taskName, "set important task"
 
+        elif "what tasks" in text or "what task" in text:
+            self.speak("which profile are you asking for?")
+            profileName = self.getAudio()
+
+            return profileName, "", "what tasks"
+
         elif "robot exit" in text:
             self.speak("Goodbye")
             return "", "", "exit"

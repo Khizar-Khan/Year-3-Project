@@ -385,7 +385,6 @@ def voiceAssistant():
                     for name in allProfileNames:
                         if str(name)[2:-3] == userCommand[0]:
                             IDs = dbVA.fetchIDByName(str(name)[2:-3])
-
                             if userCommand[2] == "add task":
                                 for id in IDs:
                                     dbVA.insertTask(str(id)[2:-3], userCommand[1])
@@ -412,6 +411,15 @@ def voiceAssistant():
                             elif userCommand[2] == "set important task":
                                 for id in IDs:
                                     dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 4, 1)
+                            elif userCommand[2] == "what tasks":
+                                for id in IDs:
+                                    allProfileTasksList = dbVA.fetchTasks(str(id)[2:-3])
+                                    va.speak("These are the following tasks that you currently have")
+                                    taskNum = 0
+
+                                    for task in allProfileTasksList:
+                                        taskNum+=1
+                                        va.speak("Task " + str(taskNum) + ", " + str(task)[2:-3])
 
                     if userCommand[2] == "add profile":
                         dbVA.insertProfile(re.sub('[\W_]+', '', userCommand[0]))
