@@ -254,7 +254,7 @@ def calendarWindow(whichTask, whichDetail):
     calendarWindow.grab_set()
 
     today = tm.getTodaysDate()
-    cal = Calendar(calendarWindow, selectmode="day", year=today.year, month=today.month, day=today.day)
+    cal = Calendar(calendarWindow, locale="en_UK", selectmode="day", year=today.year, month=today.month, day=today.day)
     cal.place(relwidth=1, relheight=0.75)
 
     hourDrop = ttk.Combobox(calendarWindow, state="readonly", value=hourDropOptions)
@@ -311,10 +311,11 @@ def refreshProfilesList(currentDatabase):
 def repeatDueDeadlinesCall():
     global dueDeadlinesAmount
 
-    print(tm.getAllDueDeadlines())
+    tm.getAllDueDeadlines()
 
     if tm.getAmountOfDueDeadlines() > dueDeadlinesAmount:
         dueDeadlinesWindow()
+        va.speak("You have a due deadline.")
         dueDeadlinesAmount = tm.getAmountOfDueDeadlines()
     else:
         dueDeadlinesAmount = tm.getAmountOfDueDeadlines()
@@ -325,10 +326,10 @@ def repeatDueRemindersCall():
     global dueRemindersAmount
 
     storeAllDueReminders = tm.getAllDueReminders()
-    print(storeAllDueReminders)
 
     if tm.getAmountOfDueReminders() > dueRemindersAmount:
         for x in range(int(tm.getAmountOfDueReminders()*3))[::3]:
+            va.speak("You have a reminder.")
             response = messagebox.showinfo("Reminder!", storeAllDueReminders[x+1])
             db.setTaskDetail(storeAllDueReminders[x+2], storeAllDueReminders[x+1], 2, 0)
 

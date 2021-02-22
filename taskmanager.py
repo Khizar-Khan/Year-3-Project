@@ -1,4 +1,5 @@
 from datetime import datetime
+import babel.numbers
 from database import Database
 
 class TaskManager:

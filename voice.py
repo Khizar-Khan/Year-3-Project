@@ -25,16 +25,17 @@ class VoiceAssistant:
 
             try:
                 said = r.recognize_google(audio)
-                print(said)
+                print("You said: " + said)
             except Exception as e:
-                print("Exception: " + str(e))
+                pass
+                #print("Exception: " + str(e))
 
         return said
 
     def interactWithUser(self):
         text = self.getAudio()
 
-        if "new task" in text:
+        if "new task" in text or "add task" in text:
             self.speak("sure, who is this task for?")
             profileName = self.getAudio()
 
@@ -43,7 +44,7 @@ class VoiceAssistant:
 
             return profileName, taskName, "add task"
 
-        elif "remove task" in text:
+        elif "remove task" in text or "delete task" in text:
             self.speak("sure, who's task would you like to remove?")
             profileName = self.getAudio()
 
@@ -52,19 +53,19 @@ class VoiceAssistant:
 
             return profileName, taskName, "remove task"
 
-        elif "add profile" in text:
+        elif "add profile" in text or "new profile" in text or "create profile" in text:
             self.speak("sure, what name should this profile have?")
             profileName = self.getAudio()
 
             return profileName, " ", "add profile"
 
-        elif "remove profile" in text:
+        elif "remove profile" in text or "delete profile" in text:
             self.speak("sure, what profile should I remove?")
             profileName = self.getAudio()
 
             return profileName, " ", "remove profile"
 
-        elif "set deadline" in text:
+        elif "set deadline" in text or "add deadline" in text:
             self.speak("sure, which profile is this task for?")
             profileName = self.getAudio()
 
@@ -82,7 +83,7 @@ class VoiceAssistant:
 
             return profileName, taskName, "set deadline", deadlineYear, deadlineMonth, deadlineDay
 
-        elif "set reminder" in text or "set a reminder" in text:
+        elif "set reminder" in text or "set a reminder" in text or "add reminder" in text:
             self.speak("sure, which profile is this task for?")
             profileName = self.getAudio()
 
@@ -100,7 +101,7 @@ class VoiceAssistant:
 
             return profileName, taskName, "set reminder", reminderYear, reminderMonth, reminderDay
 
-        elif "set important task" in text:
+        elif "set important task" in text or "set important" in text:
             self.speak("sure, which profile is this task for?")
             profileName = self.getAudio()
 
