@@ -10,6 +10,7 @@ from taskmanager import TaskManager
 from voice import VoiceAssistant
 from time import strftime
 
+from PIL import ImageTk, Image
 import threading
 import re
 #---------END---------#
@@ -56,6 +57,7 @@ setDeadlineImage = tk.PhotoImage(file="Images/Set Deadline Button.png")
 setReminderImage = tk.PhotoImage(file="Images/Set Reminder Button.png")
 importantImage = tk.PhotoImage(file="Images/Important Button.png")
 setImage = tk.PhotoImage(file="Images/Set Button.png")
+addTaskImage = tk.PhotoImage(file="Images/Add Task Button.png")
 #---------END---------#
 
 
@@ -340,14 +342,15 @@ def repeatDueRemindersCall():
     root.after(1000, repeatDueRemindersCall)
 
 def dueDeadlinesWindow():
-    deadlinesWindow = tk.Toplevel()
+    deadlinesWindow = tk.Toplevel(bg=rootBackgroundColour)
     deadlinesWindow.minsize(650,300)
     deadlinesWindow.maxsize(800,400)
+    deadlinesWindow.attributes("-alpha", 0.95)
     deadlinesWindow.title("Due Deadlines!")
     deadlinesWindow.grab_set()
 
-    deadlinesList = tk.Listbox(deadlinesWindow)
-    deadlinesList.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.9)
+    deadlinesList = tk.Listbox(deadlinesWindow, borderwidth=0)
+    deadlinesList.place(relx=0.025, rely=0.05, relwidth=0.95, relheight=0.9)
 
     storeAllDueDeadlines = tm.getAllDueDeadlines()
 
@@ -553,9 +556,26 @@ radioMeridian = tk.IntVar(value="1")
 
 
 #-----COMPONENTS-----#
+# Welcome section
+welcomeFrame = tk.Frame(root, bg=rootBackgroundColour)
+welcomeFrame.place(relx=0.05, rely=0.005, relwidth=0.9, relheight=0.055)
+
+# Welcome logo
+image = Image.open("Images/Logo.png")
+image = image.resize((34,38), Image.ANTIALIAS)
+welcomeRobotIMG = ImageTk.PhotoImage(image)
+canvas = Canvas(welcomeFrame, bg=rootBackgroundColour, bd=0, width=40, height=40, highlightthickness=0)
+canvas.create_image(17,19,image=welcomeRobotIMG)
+canvas.place(relx=0, rely=0, relwidth=0.25, relheight=1)
+
+# Welcome text
+welcomeLabel = tk.Label(welcomeFrame, text='Welcome! Say "Hey Robot" to activate your voice assistant!', bg=rootBackgroundColour, anchor="w")
+welcomeLabel.place(relx=0.075, rely=0, relwidth=1, relheight=1)
+
+
 # User profile section
 userFrame = tk.Frame(root, bg=borderColour)
-userFrame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.05)
+userFrame.place(relx=0.05, rely=0.0625, relwidth=0.9, relheight=0.05)
 
 # Combobox
 if len(profileIDs) != 0:
@@ -585,23 +605,19 @@ taskList.configure(yscrollcommand=scrollbar.set)
 scrollbar.configure(command=taskList.yview)
 
 # Button: Add task
-addTaskImage = tk.PhotoImage(file="Images/Add Task Button.png")
-addTaskButton = tk.Button(taskFrame, image=addTaskImage, command=addTaskWindow, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+addTaskButton = tk.Button(taskFrame, text="Add Task", fg="white", command=addTaskWindow, borderwidth=1, bg="#15d798", activebackground=rootBackgroundColour, font="Calibri 13 bold", relief=RIDGE)
 addTaskButton.place(relx=0, rely=0, relwidth=0.25, relheight=0.05)
 
 # Button: Remove task
-removeTaskImage = tk.PhotoImage(file="Images/Remove Task Button.png")
-removeTaskButton = tk.Button(taskFrame, image=removeTaskImage, command=removeTask, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+removeTaskButton = tk.Button(taskFrame, text="Remove Task", fg="white", command=removeTask, borderwidth=1, bg="#15d798", activebackground=rootBackgroundColour, font="Calibri 13 bold", relief=RIDGE)
 removeTaskButton.place(relx=0.25, rely=0, relwidth=0.25, relheight=0.05)
 
 # Button: Task details
-taskDetailsImage = tk.PhotoImage(file="Images/Task Details Button.png")
-taskDetailsButton = tk.Button(taskFrame, image=taskDetailsImage, command=taskDetailsWindow, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+taskDetailsButton = tk.Button(taskFrame, text="Task Details", fg="white", command=taskDetailsWindow, borderwidth=1, bg="#15d798", activebackground=rootBackgroundColour, font="Calibri 13 bold", relief=RIDGE)
 taskDetailsButton.place(relx=0.50, rely=0, relwidth=0.25, relheight=0.05)
 
 # Button: Profile Details
-profileDetailsImage = tk.PhotoImage(file="Images/Profile Details Button.png")
-profileDetailsButton = tk.Button(taskFrame, image=profileDetailsImage, command=profileWindow, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+profileDetailsButton = tk.Button(taskFrame, text="Profile Details", fg="white", command=profileWindow, borderwidth=1, bg="#15d798", activebackground=rootBackgroundColour, font="Calibri 13 bold", relief=RIDGE)
 profileDetailsButton.place(relx=0.75, rely=0, relwidth=0.25, relheight=0.05)
 #---------END---------#
 
