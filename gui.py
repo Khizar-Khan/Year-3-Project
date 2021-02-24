@@ -23,8 +23,6 @@ windowHeight = 600
 windowWidth = 700
 maxWindowMultiplier = 1.25
 
-taskButtonColour = "yellow"
-
 root = tk.Tk()
 db = Database("profile.db") 
 tm = TaskManager()
@@ -216,6 +214,17 @@ def removeTask():
     refreshTaskList(db)
 
 def taskDetailsWindow():
+    def setDescription():
+        db.setTaskDetail(str(profileID)[2:-3], task, 3, taskDescriptionBox.get(1.0, "end"))
+        taskDetailsWindow.destroy()
+    
+    def getDescription():
+        textHolder = db.getTaskDescription(str(profileID)[2:-3], task)
+        taskDescriptionBox.insert(1.0, textHolder)
+
+        taskDescriptionBox.delete(1.0,1.2) #Delete {{ In first line
+        taskDescriptionBox.delete("end-1c linestart","end") #Delete {{ In last line
+
     if taskList.get("anchor") == "":
         messagebox.showinfo("Information", "You do not have a task selected!")
         return
@@ -224,18 +233,22 @@ def taskDetailsWindow():
     task = taskRaw.split(" | DEADLINE:", 1)[0]
 
     taskDetailsWindow = tk.Toplevel()
-    taskDetailsWindow.minsize(400,200)
-    taskDetailsWindow.maxsize(400,200)
+    taskDetailsWindow.minsize(400,250)
+    taskDetailsWindow.maxsize(400,250)
     taskDetailsWindow.title("Task Details")
     taskDetailsWindow.attributes("-alpha", 0.95)
     taskDetailsWindow.configure(background=rootBackgroundColour)
     taskDetailsWindow.grab_set()
 
-    deadlineButton = tk.Button(taskDetailsWindow, image=setDeadlineImage, command=lambda:[calendarWindow(task, 1), taskDetailsWindow.destroy()], borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
-    deadlineButton.place(relx=0.3, rely=0.1, relwidth=0.4, relheight=0.15)
+    # Details Frame
+    detailsFrame = tk.Frame(taskDetailsWindow, bg=borderColour)
+    detailsFrame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.3)
 
-    reminderButton = tk.Button(taskDetailsWindow, image=setReminderImage, command=lambda:[calendarWindow(task, 2), taskDetailsWindow.destroy()], borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
-    reminderButton.place(relx=0.3, rely=0.275, relwidth=0.4, relheight=0.15)
+    deadlineButton = tk.Button(detailsFrame, image=setDeadlineImage, command=lambda:[calendarWindow(task, 1), taskDetailsWindow.destroy()], borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    deadlineButton.place(relx=0, rely=0.0, relwidth=0.4, relheight=0.50)
+
+    reminderButton = tk.Button(detailsFrame, image=setReminderImage, command=lambda:[calendarWindow(task, 2), taskDetailsWindow.destroy()], borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
+    reminderButton.place(relx=0, rely=0.5, relwidth=0.4, relheight=0.50)
 
     profileIndex = profileCombo.current()
     profileIDs = db.fetchIDs()
@@ -243,8 +256,24 @@ def taskDetailsWindow():
 
     importantActive = IntVar()
     importantActive.set(db.getIfTaskImportant(str(profileID)[2:-3], task))
-    setImportantCheck = tk.Checkbutton(taskDetailsWindow, image=importantImage, variable=importantActive, command=lambda:setDetail(task,4,importantActive.get()), borderwidth=0, bg="#15d798", activebackground="#15d798")
-    setImportantCheck.place(relx=0.3, rely=0.625, relwidth=0.4, relheight=0.25)
+    setImportantCheck = tk.Checkbutton(detailsFrame, image=importantImage, variable=importantActive, command=lambda:setDetail(task,4,importantActive.get()), borderwidth=0, bg="#15d798", activebackground="#15d798")
+    setImportantCheck.place(relx=0.45, rely=0.25, relwidth=0.5, relheight=0.50)
+
+    # Task description frame
+    taskDescriptionFrame = tk.Frame(taskDetailsWindow, bg=rootBackgroundColour)
+    taskDescriptionFrame.place(relx=0.05, rely=0.375, relwidth=0.9, relheight=0.65)
+
+    # Task description text
+    descriptionLabel = tk.Label(taskDescriptionFrame, text='Task Description:', bg=rootBackgroundColour, anchor="w")
+    descriptionLabel.place(relx=0, rely=0, relwidth=1, relheight=0.1)
+
+    taskDescriptionBox = Text(taskDescriptionFrame, font=("Calibri"))
+    taskDescriptionBox.place(relx=0, rely=0.1, relwidth=1, relheight=0.675)
+
+    setDetailButton = tk.Button(taskDescriptionFrame, image=setImage, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour, command=setDescription)
+    setDetailButton.place(relx=0.25, rely=0.775, relwidth=0.5, relheight=0.2)
+
+    getDescription()
 
 def calendarWindow(whichTask, whichDetail):
     calendarWindow = tk.Toplevel()
