@@ -116,6 +116,6 @@ class VoiceAssistant:
 
             return profileName, "", "what tasks"
 
-        elif "robot exit" in text:
+        elif "robot exit" in text or "exit robot" in text:
             self.speak("Goodbye")
             return "", "", "exit"

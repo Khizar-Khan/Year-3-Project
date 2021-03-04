@@ -120,7 +120,7 @@ def profileWindow():
             profileCombo.current(profileIndex)
 
         profileWindow.destroy()
-        refreshTaskList()
+        refreshTaskList(db)
 
     profileWindow = tk.Toplevel()
     profileWindow.minsize(350,150)
@@ -241,7 +241,7 @@ def taskDetailsWindow():
     taskDetailsWindow.grab_set()
 
     # Details Frame
-    detailsFrame = tk.Frame(taskDetailsWindow, bg=borderColour)
+    detailsFrame = tk.Frame(taskDetailsWindow, bg=rootBackgroundColour)
     detailsFrame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.3)
 
     deadlineButton = tk.Button(detailsFrame, image=setDeadlineImage, command=lambda:[calendarWindow(task, 1), taskDetailsWindow.destroy()], borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
@@ -405,7 +405,7 @@ def voiceAssistant():
     while True:
         text = va.getAudio()
 
-        if "hey robot" in text:
+        if "hey robot" in text or "hi robot" in text:
             va.speak("Hello, what can I do for you?")
             global voiceAssistantActive
             voiceAssistantActive = 1
