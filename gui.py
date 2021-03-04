@@ -320,17 +320,29 @@ def refreshTaskList(currentDatabase):
     if profileCombo.get() == "":
         taskList.delete(0,"end")
         return
+
+    db = Database("profile.db")
+
     taskList.delete(0,"end")
     profileIndex = profileCombo.current()
     profileIDs = currentDatabase.fetchIDs()
     profileID = profileIDs[profileIndex]
 
     dbTaskList = currentDatabase.fetchTasks(str(profileID)[2:-3])
+
     for item in dbTaskList:
+        taskImportance = str(db.getIfTaskImportant(str(profileID)[2:-3], str(item)[2:-3]))[1:-2]
+
         if str(currentDatabase.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3] == "0":
-            taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + "N/A")
+            if taskImportance == "1":
+                taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + "N/A" + " --IMPORTANT--")
+            else:
+                taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + "N/A")
         else:
-            taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + str(currentDatabase.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3])
+            if taskImportance == "1":
+                taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + str(currentDatabase.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3] + " --IMPORTANT--")
+            else:
+                taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + str(currentDatabase.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3])
 
 def refreshProfilesList(currentDatabase):
     profiles.clear()
@@ -361,7 +373,14 @@ def repeatDueRemindersCall():
     if tm.getAmountOfDueReminders() > dueRemindersAmount:
         for x in range(int(tm.getAmountOfDueReminders()*3))[::3]:
             va.speak("You have a reminder.")
-            response = messagebox.showinfo("Reminder!", storeAllDueReminders[x+1])
+
+            taskImportance = str(db.getIfTaskImportant(storeAllDueReminders[x+2], storeAllDueReminders[x+1]))[1:-2]
+
+            if taskImportance == "1":
+                response = messagebox.showinfo("Reminder!", "IMPORTANT | " + storeAllDueReminders[x+1])
+            else:
+                response = messagebox.showinfo("Reminder!", storeAllDueReminders[x+1])
+
             db.setTaskDetail(storeAllDueReminders[x+2], storeAllDueReminders[x+1], 2, 0)
 
         dueRemindersAmount = tm.getAmountOfDueReminders()
