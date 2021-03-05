@@ -66,43 +66,31 @@ class VoiceAssistant:
             return profileName, " ", "remove profile"
 
         elif "set deadline" in text or "add deadline" in text:
-            self.speak("sure, which profile is this task for?")
+            self.speak("sure, which profile is this deadline for?")
             profileName = self.getAudio()
 
             self.speak("which task should I set the deadline for?")
             taskName = self.getAudio()
 
-            self.speak("Which year would you like the deadline to be.")
-            deadlineYear = self.getAudio()
+            self.speak("Which date would you like the deadline to be.")
+            deadlineDate = self.getAudio()
 
-            self.speak("Which month would you like the deadline to be.")
-            deadlineMonth = self.getAudio()
-
-            self.speak("Which day would you like the deadline to be.")
-            deadlineDay = self.getAudio()
-
-            return profileName, taskName, "set deadline", deadlineYear, deadlineMonth, deadlineDay
+            return profileName, taskName, "set deadline", deadlineDate
 
         elif "set reminder" in text or "set a reminder" in text or "add reminder" in text:
-            self.speak("sure, which profile is this task for?")
+            self.speak("sure, which profile is this reminder for?")
             profileName = self.getAudio()
 
             self.speak("which task should I set the reminder for?")
             taskName = self.getAudio()
 
-            self.speak("Which year would you like the reminder to be.")
-            reminderYear = self.getAudio()
+            self.speak("Which date would you like the reminder to be.")
+            deadlineDate = self.getAudio()
 
-            self.speak("Which month would you like the reminder to be.")
-            reminderMonth = self.getAudio()
-
-            self.speak("Which day would you like the reminder to be.")
-            reminderDay = self.getAudio()
-
-            return profileName, taskName, "set reminder", reminderYear, reminderMonth, reminderDay
+            return profileName, taskName, "set reminder", deadlineDate
 
         elif "set important task" in text or "set important" in text:
-            self.speak("sure, which profile is this task for?")
+            self.speak("sure, which profile is this important task for?")
             profileName = self.getAudio()
 
             self.speak("which task would you like to make important?")
@@ -116,6 +104,6 @@ class VoiceAssistant:
 
             return profileName, "", "what tasks"
 
-        elif "robot exit" in text or "exit robot" in text:
+        elif "robot exit" in text or "exit robot" in text or "goodbye robot" in text:
             self.speak("Goodbye")
             return "", "", "exit"

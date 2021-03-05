@@ -13,6 +13,8 @@ from time import strftime
 from PIL import ImageTk, Image
 import threading
 import re
+
+from datetime import datetime
 #---------END---------#
 
 
@@ -440,29 +442,93 @@ def voiceAssistant():
                             if userCommand[2] == "add task":
                                 for id in IDs:
                                     dbVA.insertTask(str(id)[2:-3], userCommand[1])
+                                    va.speak("Task added")
                             elif userCommand[2] == "remove task":
                                 for id in IDs:
                                     dbVA.removeTask(str(id)[2:-3], userCommand[1])
+                                    va.speak("Task removed")
                             elif userCommand[2] == "remove profile":
                                 for id in IDs:
                                     dbVA.removeProfile(str(id)[2:-3])
+                                    va.speak("profile removed")
                             elif userCommand[2] == "set deadline":
                                 for id in IDs:
-                                    year = userCommand[3]
-                                    month = userCommand[4]
-                                    day = userCommand[5]
+                                    date = userCommand[3]
 
-                                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 1, correctDateFormat(day, month, year))
+                                    oldFormattedDate = datetime.now()
+                                    formattedDate = datetime.now()
+
+                                    try:
+                                        formattedDate = datetime.strptime(date, '%dth of %B %Y')
+                                    except:
+                                        pass
+                                    try:
+                                        formattedDate = datetime.strptime(date, '%drd of %B %Y')
+                                    except:
+                                        pass
+                                    try:
+                                        formattedDate = datetime.strptime(date, '%dst of %B %Y')
+                                    except:
+                                        pass
+                                    try:
+                                        formattedDate = datetime.strptime(date, '%dnd of %B %Y')
+                                    except:
+                                        pass
+
+                                    if formattedDate == oldFormattedDate:
+                                        va.speak("I'm sorry, I could not do that. Please try again.")
+                                        break
+
+                                    try:
+                                        day = formattedDate.day
+                                        month = formattedDate.month
+                                        year = formattedDate.year
+
+                                        dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 1, correctDateFormat(day, month, year))
+                                        va.speak("Deadline is set")
+                                    except:
+                                        va.speak("I'm sorry, I could not do that. Please try again.")
                             elif userCommand[2] == "set reminder":
                                 for id in IDs:
-                                    year = userCommand[3]
-                                    month = userCommand[4]
-                                    day = userCommand[5]
+                                    date = userCommand[3]
 
-                                    dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 2, correctDateFormat(day, month, year))
+                                    oldFormattedDate = datetime.now()
+                                    formattedDate = datetime.now()
+
+                                    try:
+                                        formattedDate = datetime.strptime(date, '%dth of %B %Y')
+                                    except:
+                                        pass
+                                    try:
+                                        formattedDate = datetime.strptime(date, '%drd of %B %Y')
+                                    except:
+                                        pass
+                                    try:
+                                        formattedDate = datetime.strptime(date, '%dst of %B %Y')
+                                    except:
+                                        pass
+                                    try:
+                                        formattedDate = datetime.strptime(date, '%dnd of %B %Y')
+                                    except:
+                                        pass
+
+                                    if formattedDate == oldFormattedDate:
+                                        va.speak("I'm sorry, I could not do that. Please try again.")
+                                        break
+
+                                    try:
+                                        day = formattedDate.day
+                                        month = formattedDate.month
+                                        year = formattedDate.year
+
+                                        dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 2, correctDateFormat(day, month, year))
+                                        va.speak("Reminder is set")
+                                    except:
+                                        va.speak("I'm sorry, I could not do that. Please try again.")
                             elif userCommand[2] == "set important task":
                                 for id in IDs:
                                     dbVA.setTaskDetail(str(id)[2:-3], userCommand[1], 4, 1)
+                                    va.speak("Task is set as important")
                             elif userCommand[2] == "what tasks":
                                 for id in IDs:
                                     allProfileTasksList = dbVA.fetchTasks(str(id)[2:-3])
@@ -475,6 +541,7 @@ def voiceAssistant():
 
                     if userCommand[2] == "add profile":
                         dbVA.insertProfile(re.sub('[\W_]+', '', userCommand[0]))
+                        va.speak("Profile added")
 
                     if userCommand[2] == "exit":
                         voiceAssistantActive = 0
@@ -493,101 +560,7 @@ def voiceAssistant():
                 refreshTaskList(dbVA)
 
 def correctDateFormat(day, month, year):
-    if day == "one" or day == "1st" or day == "first" or day == "1":
-        formattedDay = "01"
-    elif day == "two" or day == "2nd" or day == "second" or day == "2":
-        formattedDay = "02"
-    elif day == "three" or day == "3rd" or day == "third" or day == "3":
-        formattedDay = "03"
-    elif day == "four" or day == "4th" or day == "fourth" or day == "4":
-        formattedDay = "04"
-    elif day == "five" or day == "5th" or day == "fifth" or day == "5":
-        formattedDay = "05"
-    elif day == "six" or day == "6th" or day == "sixth" or day == "6":
-        formattedDay = "06"
-    elif day == "seven" or day == "7th" or day == "seventh" or day == "7":
-        formattedDay = "07"
-    elif day == "eight" or day == "8th" or day == "eighth" or day == "8":
-        formattedDay = "08"
-    elif day == "nine" or day == "9th" or day == "ninth" or day == "9":
-        formattedDay = "09"
-    elif day == "ten" or day == "10th" or day == "tenth" or day == "10":
-        formattedDay = "10"
-    elif day == "eleven" or day == "11th" or day == "eleventh" or day == "11":
-        formattedDay = "11"
-    elif day == "twelve" or day == "12th" or day == "twelfth" or day == "12":
-        formattedDay = "12"
-    elif day == "thirteen" or day == "13th" or day == "thirteenth" or day == "13":
-        formattedDay = "13"
-    elif day == "fourteen" or day == "14th" or day == "fourteenth" or day == "14":
-        formattedDay = "14"
-    elif day == "fifteen" or day == "15th" or day == "fifteenth" or day == "15":
-        formattedDay = "15"
-    elif day == "sixteen" or day == "16th" or day == "sixteenth" or day == "16":
-        formattedDay = "16"
-    elif day == "seventeen" or day == "17th" or day == "seventeenth" or day == "17":
-        formattedDay = "17"
-    elif day == "eighteen" or day == "18th" or day == "eighteenth" or day == "18":
-        formattedDay = "18"
-    elif day == "nineteen" or day == "19th" or day == "nineteenth" or day == "19":
-        formattedDay = "19"
-    elif day == "twenty" or day == "20th" or day == "twentieth" or day == "20":
-        formattedDay = "20"
-    elif day == "twenty one" or day == "21st" or day == "twenty first" or day == "21":
-        formattedDay = "21"
-    elif day == "twenty two" or day == "22nd" or day == "twenty second" or day == "22":
-        formattedDay = "22"
-    elif day == "twenty three" or day == "23rd" or day == "twenty third" or day == "23":
-        formattedDay = "23"
-    elif day == "twenty four" or day == "24th" or day == "twenty fourth" or day == "24":
-        formattedDay = "24"
-    elif day == "twenty five" or day == "25th" or day == "twenty fifth" or day == "25":
-        formattedDay = "25"
-    elif day == "twenty six" or day == "26th" or day == "twenty sixth" or day == "26":
-        formattedDay = "26"
-    elif day == "twenty seven" or day == "27th" or day == "twenty seventh" or day == "27":
-        formattedDay = "27"
-    elif day == "twenty eight" or day == "28th" or day == "twenty eighth" or day == "28":
-        formattedDay = "28"
-    elif day == "twenty nine" or day == "29th" or day == "twenty ninth" or day == "29":
-        formattedDay = "29"
-    elif day == "thirty" or day == "30th" or day == "thirtieth" or day == "30":
-        formattedDay = "30"
-    elif day == "thirty one" or day == "31st" or day == "thirty first" or day == "31":
-        formattedDay = "31"
-    else:
-        formattedDay = "01"
-
-    if month == "January":
-        formattedMonth = "01"
-    elif month == "February":
-        formattedMonth = "02"
-    elif month == "March":
-        formattedMonth = "03"
-    elif month == "April":
-        formattedMonth = "04"
-    elif month == "May":
-        formattedMonth = "05"
-    elif month == "June":
-        formattedMonth = "06"
-    elif month == "July":
-        formattedMonth = "07"
-    elif month == "August":
-        formattedMonth = "08"
-    elif month == "September":
-        formattedMonth = "09"
-    elif month == "October":
-        formattedMonth = "10"
-    elif month == "November":
-        formattedMonth = "11"
-    elif month == "December":
-        formattedMonth = "12"
-    else:
-        formattedMonth = "01"
-
-    formattedYear = re.sub('[\W_]+', '', year)
-
-    return formattedDay + "/" + formattedMonth + "/" + formattedYear + " 12:00 PM"  
+    return str(day) + "/" + str(month) + "/" + str(year) + " 12:00 PM"  
 #---------END---------#
 
 
