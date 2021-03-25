@@ -10,8 +10,8 @@ class Database:
         self.c = self.conn.cursor()
 
         # Create table
-        self.c.execute("CREATE TABLE IF NOT EXISTS profiles (id text, name text)")
-        self.c.execute("CREATE TABLE IF NOT EXISTS tasks (id text, task text, deadline TEXT, reminder TEXT, important INTEGER, description TEXT)")
+        self.c.execute("CREATE TABLE IF NOT EXISTS profiles (id text, name text)") # Create a table to hold profile ID and profile name
+        self.c.execute("CREATE TABLE IF NOT EXISTS tasks (id text, task text, deadline TEXT, reminder TEXT, important INTEGER, description TEXT)") # Create a table to hold task name and details
 
         # Commit
         self.conn.commit()
@@ -33,12 +33,12 @@ class Database:
         return ids
 
     def fetchProfileById(self, id):
-        self.c.execute("SELECT name FROM profiles WHERE id=?", (id,))
-        profileID = self.c.fetchone()
+        self.c.execute("SELECT name FROM profiles WHERE id=?", (id,)) # Get profile name
+        profileID = self.c.fetchone() # Grab one item
         return profileID
 
     def insertProfile(self, name):
-        id = str(uuid.uuid4())
+        id = str(uuid.uuid4()) # Create a random ID
         self.c.execute("INSERT INTO profiles (id, name) VALUES (?,?)", (id, name))
         self.conn.commit()
 
@@ -57,7 +57,7 @@ class Database:
         return tasks
 
     def insertTask(self, id, task):
-        self.c.execute("INSERT INTO tasks (id, task, deadline, reminder, important, description) VALUES (?,?,0,0,0,?)", (id, task,""))
+        self.c.execute("INSERT INTO tasks (id, task, deadline, reminder, important, description) VALUES (?,?,0,0,0,?)", (id, task,"")) # Insert task
         self.conn.commit()
 
     def removeTask(self, id, task):

@@ -8,41 +8,41 @@ from gtts import gTTS
 
 class VoiceAssistant:
     def __init__(self):
-        self.assistantIsActive = False
+        pass
 
     def speak(self, text):
-        tts = gTTS(text=text, lang="en")
-        filename = "botVoice.mp3"
-        tts.save(filename)
-        playsound.playsound(filename)
-        os.remove(filename)
+        tts = gTTS(text=text, lang="en") # Turn text to speech and in english.
+        filename = "botVoice.mp3" # Set location and name for the audio file.
+        tts.save(filename) # Save the speech to a location as a specified name.
+        playsound.playsound(filename) # Play the sound that is stored in this location
+        os.remove(filename) # Remove the file at this location and specified name
 
     def getAudio(self):
-        r = sr.Recognizer()
-        with sr.Microphone() as source:
-            audio = r.listen(source)
-            said = ""
+        r = sr.Recognizer() # Set r to do recognition work
+        with sr.Microphone() as source: # Get microphone input from source
+            audio = r.listen(source) # Listen to the source and store it
+            said = "" # Set said to empty if nothing can be recognised
 
             try:
-                said = r.recognize_google(audio)
-                print("You said: " + said)
+                said = r.recognize_google(audio) # Use speech recognition and turn the audio into text
+                print("You said: " + said) # Print for the user what they have said to the console
             except Exception as e:
-                pass
-                #print("Exception: " + str(e))
+                pass # If there was an error in recognising the audio then do nothing
+                #print("Exception: " + str(e)) # Print the error
 
         return said
 
     def interactWithUser(self):
-        text = self.getAudio()
+        text = self.getAudio() # Get user voice and store it
 
-        if "new task" in text or "add task" in text:
+        if "new task" in text or "add task" in text: # If the text is found within
             self.speak("sure, who is this task for?")
-            profileName = self.getAudio()
+            profileName = self.getAudio() # Get profile name from user and store
 
             self.speak("what task would you like to add?")
-            taskName = self.getAudio()
+            taskName = self.getAudio() # Get task name and store
 
-            return profileName, taskName, "add task"
+            return profileName, taskName, "add task" # Return name, task and what action to perform
 
         elif "remove task" in text or "delete task" in text:
             self.speak("sure, who's task would you like to remove?")

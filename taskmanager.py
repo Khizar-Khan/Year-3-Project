@@ -87,6 +87,3 @@ class TaskManager:
     
     def getTodaysDate(self):
         return datetime.today()
-
-    def formatSpokenDate(self, string):
-        pass

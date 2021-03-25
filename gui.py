@@ -64,65 +64,65 @@ addTaskImage = tk.PhotoImage(file="Images/Add Task Button.png")
 #------FUNCTIONS------#
 def profileWindow():
     def createProfile():
-        profileName = re.sub('[\W_]+', '', inputCreate.get())
-        if len(profileName) > 0:
-            db.insertProfile(profileName)
+        profileName = re.sub('[\W_]+', '', inputCreate.get()) # Remove special charcaters and spaces
+        if len(profileName) > 0: # If the length of the name is valid / more than 0
+            db.insertProfile(profileName) # Insert name to the database
         else:
-            messagebox.showinfo("Information", "Enter name to create a profile!")
+            messagebox.showinfo("Information", "Enter name to create a profile!") # Error message
 
-        refreshProfilesList(db)
-        profileCombo.config(values=profiles)
+        refreshProfilesList(db) # Update the list of profiles
+        profileCombo.config(values=profiles) # Update the dropdown menu to have new profiles
         if len(profiles) == 1:
-            profileCombo.current(0)
+            profileCombo.current(0) # Set the currently selected
 
-        profileWindow.destroy()
-        refreshTaskList(db)
+        profileWindow.destroy() # Destroy the profile window 
+        refreshTaskList(db) # Refresh the task list to reflect the new profile's task list
 
     def deleteProfile():
-        if profileCombo.get() == "":
+        if profileCombo.get() == "": # If combobox is empty
             messagebox.showinfo("Information", "There are no profiles to delete!")
             profileWindow.destroy()
             return
-        profileIndex = profileCombo.current()
-        profileIDs = db.fetchIDs()
-        profileID = profileIDs[profileIndex]
-        db.removeProfile(str(profileID)[2:-3])
-        db.removeTasks(str(profileID)[2:-3])
+        profileIndex = profileCombo.current() # Get current index of the profile
+        profileIDs = db.fetchIDs() # Get all the IDs that exist
+        profileID = profileIDs[profileIndex] # Get the ID of the currently selected profile
+        db.removeProfile(str(profileID)[2:-3]) # Remove the profile from the database
+        db.removeTasks(str(profileID)[2:-3]) # Remove the tasks associated with the profile
 
-        refreshProfilesList(db)
-        if len(profiles) != 0:
-            profileCombo.config(values=profiles)
-            profileCombo.current(0)
+        refreshProfilesList(db) # Update profiles list to show available profiles
+        if len(profiles) != 0: # If profiles still exist
+            profileCombo.config(values=profiles) # Set the combobox to include updated profiles list
+            profileCombo.current(0) # Set the first profile on the list to be the currently selected profile
         else:
-            profileCombo.config(values=[""])
+            profileCombo.config(values=[""]) # Empty combobox
             profileCombo.current(0)
 
         profileWindow.destroy()
         refreshTaskList(db)
 
     def updateProfile():
-        if profileCombo.get() == "":
-            messagebox.showinfo("Information", "There are no profiles to change!")
-            profileWindow.destroy()
+        if profileCombo.get() == "": # If there are no profiles
+            messagebox.showinfo("Information", "There are no profiles to change!") # Inform the user that there is nothing to change
+            profileWindow.destroy() # Close the profile window
             return
-        profileName = re.sub('[\W_]+', '', inputUpdate.get())
+        profileName = re.sub('[\W_]+', '', inputUpdate.get()) # Remove special charcaters and spaces
         if len(profileName) > 0:
-            profileIndex = profileCombo.current()
-            profileIDs = db.fetchIDs()
-            profileID = profileIDs[profileIndex]
-            db.updateProfile(profileName, str(profileID)[2:-3])
+            profileIndex = profileCombo.current() # Get current index of the profile
+            profileIDs = db.fetchIDs() # Get all the IDs that exist
+            profileID = profileIDs[profileIndex] # Get the ID of the currently selected profile
+            db.updateProfile(profileName, str(profileID)[2:-3]) # Update the profile name
         else:
             messagebox.showinfo("Information", "Enter name to update a profile!")
 
-        refreshProfilesList(db)
+        refreshProfilesList(db) # Update profiles list to show available profiles
         profileCombo.config(values=profiles)
         if len(profiles) == 1:
-            profileCombo.current(0)
+            profileCombo.current(0) # Set the first profile on the list to be the currently selected profile
         else:
-            profileCombo.current(profileIndex)
+            profileCombo.current(profileIndex) # Set the currently selected profile to be the updated name
 
-        profileWindow.destroy()
-        refreshTaskList(db)
+        profileWindow.destroy() # Close window
+        refreshTaskList(db) # Refresh task list
 
     profileWindow = tk.Toplevel()
     profileWindow.minsize(350,150)
@@ -134,21 +134,21 @@ def profileWindow():
 
     inputCreateFrame = tk.Frame(profileWindow, bg=borderColour)
     inputCreateFrame.place(relx=0.05, rely=0.125, relwidth=0.4, relheight=0.15)
-    inputCreate = tk.Entry(inputCreateFrame, borderwidth=0)
+    inputCreate = tk.Entry(inputCreateFrame, borderwidth=0) # Entry box for creating a profile
     inputCreate.place(relx=0.025, rely=0.15, relwidth=0.95, relheight=0.7)
 
     inputUpdateFrame = tk.Frame(profileWindow, bg=borderColour)
     inputUpdateFrame.place(relx=0.05, rely=0.4, relwidth=0.4, relheight=0.15)
-    inputUpdate = tk.Entry(inputUpdateFrame, borderwidth=0)
+    inputUpdate = tk.Entry(inputUpdateFrame, borderwidth=0) # Entry box for changing a profile name
     inputUpdate.place(relx=0.025, rely=0.15, relwidth=0.95, relheight=0.7)
 
     currentProfileFrame = tk.Frame(profileWindow, bg=borderColour)
     currentProfileFrame.place(relx=0.05, rely=0.675, relwidth=0.4, relheight=0.15)
-    if profileCombo.get() == "":
+    if profileCombo.get() == "": # If there is no profile
         currentProfile = "N/A"
     else:
-        currentProfile = profileCombo.get()
-    currentProfileLabel = tk.Label(currentProfileFrame, text="Profile: "+currentProfile, bg="white")
+        currentProfile = profileCombo.get() # Get current profile
+    currentProfileLabel = tk.Label(currentProfileFrame, text="Profile: "+currentProfile, bg="white") # Labeled and coloured to match colour scheme
     currentProfileLabel.place(relx=0.025, rely=0.15, relwidth=0.95, relheight=0.7)
 
     createProfileButton = tk.Button(profileWindow, image=createProfileImage, command=createProfile, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
@@ -161,48 +161,49 @@ def profileWindow():
     deleteProfileButton.place(relx=0.55, rely=0.625, relwidth=0.45, relheight=0.25)
 
 def addTaskWindow():
-    if profileCombo.get() == "":
-        messagebox.showinfo("Information", "Create a valid profile first!")
+    if profileCombo.get() == "": # If the profile combobox is empty
+        messagebox.showinfo("Information", "Create a valid profile first!") # Pop-up for the user
         return
 
     def addTask():
-        profileIndex = profileCombo.current()
-        profileIDs = db.fetchIDs()
-        profileID = profileIDs[profileIndex]
+        profileIndex = profileCombo.current() # Get current profile index
+        profileIDs = db.fetchIDs() # Get all the profile IDs from the database
+        profileID = profileIDs[profileIndex] # Get the id of the currently selected profile
 
-        if len(input.get()) > 0:
+        if len(input.get()) > 0: # If the entry field has something written on it
             taskText = input.get()
-            allProfileTasks = db.fetchTasks(str(profileID)[2:-3])
+            allProfileTasks = db.fetchTasks(str(profileID)[2:-3]) # Get all tasks for this user
 
-            for x in allProfileTasks:
+            for x in allProfileTasks: # Check is task already exists
                 if taskText == str(x)[2:-3]:
                     addTaskWindow.destroy()
                     messagebox.showinfo("Information", "Task already exists!")
                     return
         else:
-            addTaskWindow.destroy()
+            addTaskWindow.destroy() # Close the window
             messagebox.showinfo("Information", "Enter a task!")
             return
 
-        db.insertTask(str(profileID)[2:-3], taskText)
-        refreshTaskList(db)
-        addTaskWindow.destroy()
+        db.insertTask(str(profileID)[2:-3], taskText) # Insert the task to the database
+        refreshTaskList(db) # Refresh task list to display up to date tasks
+        addTaskWindow.destroy() # Close the window
 
-    addTaskWindow = tk.Toplevel()
-    addTaskWindow.minsize(350,150)
-    addTaskWindow.maxsize(350,150)
-    addTaskWindow.title("Add Task")
-    addTaskWindow.attributes("-alpha", 0.95)
-    addTaskWindow.configure(background=rootBackgroundColour)
-    addTaskWindow.grab_set()
+    addTaskWindow = tk.Toplevel() # Create new window
+    addTaskWindow.minsize(350,150) # Minimum size of the window
+    addTaskWindow.maxsize(350,150) # Maximum size of the window
+    addTaskWindow.title("Add Task") # Title of the window
+    addTaskWindow.attributes("-alpha", 0.95) # Make window slightly transparent for glassy look
+    addTaskWindow.configure(background=rootBackgroundColour) # Set background colour
+    addTaskWindow.grab_set() # Make this window the only one to be interactable until closed
 
     addTaskFrame = tk.Frame(addTaskWindow, bg=borderColour)
     addTaskFrame.place(relx=0.05, rely=0.125, relwidth=0.9, relheight=0.15)
-    input = tk.Entry(addTaskFrame, borderwidth=0)
-    input.place(relx=0.01, rely=0.15, relwidth=0.98, relheight=0.7)
 
-    addTaskButton = tk.Button(addTaskWindow, image=addTaskImage, command=addTask, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
-    addTaskButton.place(relx=0.3, rely=0.35, relwidth=0.4, relheight=0.2)
+    input = tk.Entry(addTaskFrame, borderwidth=0) # Create entry field
+    input.place(relx=0.01, rely=0.15, relwidth=0.98, relheight=0.7) # Place entry field
+
+    addTaskButton = tk.Button(addTaskWindow, image=addTaskImage, command=addTask, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour) # Custom button
+    addTaskButton.place(relx=0.3, rely=0.35, relwidth=0.4, relheight=0.2) # Place button
 
 def removeTask():
     if profileCombo.get() == "":
@@ -217,12 +218,12 @@ def removeTask():
 
 def taskDetailsWindow():
     def setDescription():
-        db.setTaskDetail(str(profileID)[2:-3], task, 3, taskDescriptionBox.get(1.0, "end"))
-        taskDetailsWindow.destroy()
+        db.setTaskDetail(str(profileID)[2:-3], task, 3, taskDescriptionBox.get(1.0, "end")) # Store sescription
+        taskDetailsWindow.destroy() # Close the task description window
     
     def getDescription():
-        textHolder = db.getTaskDescription(str(profileID)[2:-3], task)
-        taskDescriptionBox.insert(1.0, textHolder)
+        textHolder = db.getTaskDescription(str(profileID)[2:-3], task) # Get description from database
+        taskDescriptionBox.insert(1.0, textHolder) # Insert text into description box
 
         taskDescriptionBox.delete(1.0,1.2) #Delete {{ In first line
         taskDescriptionBox.delete("end-1c linestart","end") #Delete {{ In last line
@@ -231,8 +232,8 @@ def taskDetailsWindow():
         messagebox.showinfo("Information", "You do not have a task selected!")
         return
 
-    taskRaw = taskList.get("anchor")
-    task = taskRaw.split(" | DEADLINE:", 1)[0]
+    taskRaw = taskList.get("anchor") # Get the currently selected task
+    task = taskRaw.split(" | DEADLINE:", 1)[0] # Split after | and get everything before it
 
     taskDetailsWindow = tk.Toplevel()
     taskDetailsWindow.minsize(400,250)
@@ -256,10 +257,10 @@ def taskDetailsWindow():
     profileIDs = db.fetchIDs()
     profileID = profileIDs[profileIndex]
 
-    importantActive = IntVar()
-    importantActive.set(db.getIfTaskImportant(str(profileID)[2:-3], task))
-    setImportantCheck = tk.Checkbutton(detailsFrame, image=importantImage, variable=importantActive, command=lambda:setDetail(task,4,importantActive.get()), borderwidth=0, bg="#15d798", activebackground="#15d798")
-    setImportantCheck.place(relx=0.45, rely=0.25, relwidth=0.5, relheight=0.50)
+    importantActive = IntVar() # Allow to use 0 or 1 for checkbutton value
+    importantActive.set(db.getIfTaskImportant(str(profileID)[2:-3], task)) # Check if the task is important or not
+    setImportantCheck = tk.Checkbutton(detailsFrame, image=importantImage, variable=importantActive, command=lambda:setDetail(task,4,importantActive.get()), borderwidth=0, bg="#15d798", activebackground="#15d798") # Set task as important or not
+    setImportantCheck.place(relx=0.45, rely=0.25, relwidth=0.5, relheight=0.50) # Place the checkbox
 
     # Task description frame
     taskDescriptionFrame = tk.Frame(taskDetailsWindow, bg=rootBackgroundColour)
@@ -269,7 +270,7 @@ def taskDetailsWindow():
     descriptionLabel = tk.Label(taskDescriptionFrame, text='Task Description:', bg=rootBackgroundColour, anchor="w")
     descriptionLabel.place(relx=0, rely=0, relwidth=1, relheight=0.1)
 
-    taskDescriptionBox = Text(taskDescriptionFrame, font=("Calibri"))
+    taskDescriptionBox = Text(taskDescriptionFrame, font=("Calibri")) # Description box with Calibri font
     taskDescriptionBox.place(relx=0, rely=0.1, relwidth=1, relheight=0.675)
 
     setDetailButton = tk.Button(taskDescriptionFrame, image=setImage, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour, command=setDescription)
@@ -286,16 +287,16 @@ def calendarWindow(whichTask, whichDetail):
     calendarWindow.configure(background=rootBackgroundColour)
     calendarWindow.grab_set()
 
-    today = tm.getTodaysDate()
-    cal = Calendar(calendarWindow, locale="en_UK", selectmode="day", year=today.year, month=today.month, day=today.day)
+    today = tm.getTodaysDate() # get today's date
+    cal = Calendar(calendarWindow, locale="en_UK", selectmode="day", year=today.year, month=today.month, day=today.day) # Create calendar with todays date selected
     cal.place(relwidth=1, relheight=0.75)
 
-    hourDrop = ttk.Combobox(calendarWindow, state="readonly", value=hourDropOptions)
-    hourDrop.current(11)
+    hourDrop = ttk.Combobox(calendarWindow, state="readonly", value=hourDropOptions) # Combobox with hours
+    hourDrop.current(11) # Set the current selected value
     hourDrop.place(relx=0.350, rely=0.775, relwidth=0.15, relheight=0.05)
 
-    minuteDrop = ttk.Combobox(calendarWindow, state="readonly", value=minuteDropOptions)
-    minuteDrop.current(0)
+    minuteDrop = ttk.Combobox(calendarWindow, state="readonly", value=minuteDropOptions) # Combobox with monutes
+    minuteDrop.current(0) # Set the current selected value
     minuteDrop.place(relx=0.500, rely=0.775, relwidth=0.15, relheight=0.05)
 
     radioCheckPM = tk.Radiobutton(calendarWindow, text="PM", variable=radioMeridian, value=1, borderwidth=0, bg=rootBackgroundColour, activebackground=rootBackgroundColour)
@@ -347,11 +348,11 @@ def refreshTaskList(currentDatabase):
                 taskList.insert("end", str(item)[2:-3] + " | DEADLINE: " + str(currentDatabase.getDeadline(str(profileID)[2:-3], str(item)[2:-3]))[2:-3])
 
 def refreshProfilesList(currentDatabase):
-    profiles.clear()
-    profileIDs = currentDatabase.fetchIDs()
-    if len(profileIDs) > 0:
+    profiles.clear() # Emtpy the list
+    profileIDs = currentDatabase.fetchIDs() # Get all profiles IDs
+    if len(profileIDs) > 0: # If there are any profiles
         for x in profileIDs:
-            profiles.append(currentDatabase.fetchProfileById(str(x)[2:-3]))
+            profiles.append(currentDatabase.fetchProfileById(str(x)[2:-3])) # Add profile names to list in order
 
 def repeatDueDeadlinesCall():
     global dueDeadlinesAmount
@@ -416,12 +417,12 @@ def dueDeadlinesWindow():
         if taskImportance == "1":
             deadlinesList.insert("end", " --IMPORTANT--" + " PROFILE: " + profileName + ", TASK: " + currentTask + ", DEADLINE: " + str(taskDeadline.strftime('%d-%m-%Y, %I:%M%p')))
         else:
-            deadlinesList.insert("end", "PROFILE: " + profileName + ", TASK: " + currentTask + ", DEADLINE: " + str(taskDeadline.strftime('%d-%m-%Y, %I:%M%p')))
+            deadlinesList.insert("end", "PROFILE: " + profileName + ", TASK: " + currentTask + ", DEADLINE: " + str(taskDeadline.strftime('%d/%m/%Y, %I:%M%p')))
         
         n += 3
 
 def voiceAssistant():
-    dbVA = Database("profile.db")
+    dbVA = Database("profile.db") # Open database again for threading
     
     while True:
         text = va.getAudio()
@@ -429,16 +430,16 @@ def voiceAssistant():
         if "hey robot" in text or "hi robot" in text:
             va.speak("Hello, what can I do for you?")
             global voiceAssistantActive
-            voiceAssistantActive = 1
+            voiceAssistantActive = 1 # Set voice assistant to active
 
-            while voiceAssistantActive == 1:
+            while voiceAssistantActive == 1: # Only run if assistant is active
                 allProfileNames = dbVA.fetchProfileNames()
                 userCommand = va.interactWithUser()
 
                 try:
                     for name in allProfileNames:
-                        if str(name)[2:-3] == userCommand[0]:
-                            IDs = dbVA.fetchIDByName(str(name)[2:-3])
+                        if str(name)[2:-3] == userCommand[0]: # Only run if the name exists in the list
+                            IDs = dbVA.fetchIDByName(str(name)[2:-3]) # Get profile ID
                             if userCommand[2] == "add task":
                                 for id in IDs:
                                     dbVA.insertTask(str(id)[2:-3], userCommand[1])
@@ -455,8 +456,8 @@ def voiceAssistant():
                                 for id in IDs:
                                     date = userCommand[3]
 
-                                    oldFormattedDate = datetime.now()
-                                    formattedDate = datetime.now()
+                                    oldFormattedDate = datetime.now() # Get current date
+                                    formattedDate = datetime.now() # Get date but this will change if try is successful
 
                                     try:
                                         formattedDate = datetime.strptime(date, '%dth of %B %Y')
@@ -475,7 +476,7 @@ def voiceAssistant():
                                     except:
                                         pass
 
-                                    if formattedDate == oldFormattedDate:
+                                    if formattedDate == oldFormattedDate: # The date given is not in the correct format
                                         va.speak("I'm sorry, I could not do that. Please try again.")
                                         break
 
@@ -531,12 +532,12 @@ def voiceAssistant():
                                     va.speak("Task is set as important")
                             elif userCommand[2] == "what tasks":
                                 for id in IDs:
-                                    allProfileTasksList = dbVA.fetchTasks(str(id)[2:-3])
+                                    allProfileTasksList = dbVA.fetchTasks(str(id)[2:-3]) # Get all tasks for this ID
                                     va.speak("These are the following tasks that you currently have")
-                                    taskNum = 0
+                                    taskNum = 0 # To count tasks
 
                                     for task in allProfileTasksList:
-                                        taskNum+=1
+                                        taskNum+=1 # increase count
                                         va.speak("Task " + str(taskNum) + ", " + str(task)[2:-3])
 
                     if userCommand[2] == "add profile":
@@ -544,7 +545,7 @@ def voiceAssistant():
                         va.speak("Profile added")
 
                     if userCommand[2] == "exit":
-                        voiceAssistantActive = 0
+                        voiceAssistantActive = 0 # Exit the while loop to deactivate assistant
                 except:
                     pass
 
@@ -578,46 +579,46 @@ radioMeridian = tk.IntVar(value="1")
 
 #-----COMPONENTS-----#
 # Welcome section
-welcomeFrame = tk.Frame(root, bg=rootBackgroundColour)
-welcomeFrame.place(relx=0.05, rely=0.005, relwidth=0.9, relheight=0.055)
+welcomeFrame = tk.Frame(root, bg=rootBackgroundColour) # Create a frame for grouping widgets
+welcomeFrame.place(relx=0.05, rely=0.005, relwidth=0.9, relheight=0.055) # Set the position and size
 
 # Welcome logo
-image = Image.open("Images/Logo.png")
-image = image.resize((34,38), Image.ANTIALIAS)
+image = Image.open("Images/Logo.png") # Open image
+image = image.resize((34,38), Image.ANTIALIAS) # Resize image
 welcomeRobotIMG = ImageTk.PhotoImage(image)
-canvas = Canvas(welcomeFrame, bg=rootBackgroundColour, bd=0, width=40, height=40, highlightthickness=0)
-canvas.create_image(17,19,image=welcomeRobotIMG)
-canvas.place(relx=0, rely=0, relwidth=0.25, relheight=1)
+canvas = Canvas(welcomeFrame, bg=rootBackgroundColour, bd=0, width=40, height=40, highlightthickness=0) # Create Canvas
+canvas.create_image(17,19,image=welcomeRobotIMG) # Set the position of the image within the canvas
+canvas.place(relx=0, rely=0, relwidth=0.25, relheight=1) # Place the canvas
 
 # Welcome text
-welcomeLabel = tk.Label(welcomeFrame, text='Welcome! Say "Hey Robot" to activate your voice assistant!', bg=rootBackgroundColour, anchor="w")
-welcomeLabel.place(relx=0.075, rely=0, relwidth=1, relheight=1)
+welcomeLabel = tk.Label(welcomeFrame, text='Welcome! Say "Hey Robot" to activate your voice assistant!', bg=rootBackgroundColour, anchor="w") # Create text
+welcomeLabel.place(relx=0.075, rely=0, relwidth=1, relheight=1) # Place the label
 
 
 # User profile section
-userFrame = tk.Frame(root, bg=borderColour)
-userFrame.place(relx=0.05, rely=0.0625, relwidth=0.9, relheight=0.05)
+userFrame = tk.Frame(root, bg=borderColour) # Create a frame
+userFrame.place(relx=0.05, rely=0.0625, relwidth=0.9, relheight=0.05) # Set the position and size
 
 # Combobox
-if len(profileIDs) != 0:
-    refreshProfilesList(db)
-    profileCombo = ttk.Combobox(userFrame, state="readonly", value=profiles)
-    profileCombo.current(0)
+if len(profileIDs) != 0: # If a profile exists
+    refreshProfilesList(db) # Check if the list of profiles has changed
+    profileCombo = ttk.Combobox(userFrame, state="readonly", value=profiles) # Create combobox
+    profileCombo.current(0) # Set the currently selected name to be the first one
 else:
-    profileCombo = ttk.Combobox(userFrame, state="readonly", value=[""])
-    profileCombo.current(0)
+    profileCombo = ttk.Combobox(userFrame, state="readonly", value=[""]) # Create empty combobox
+    profileCombo.current(0) # Set the currently selected name to nothing or empty
 
-profileCombo.place(relx=0.005, rely=0.05, relwidth=0.99, relheight=0.9)
-profileCombo.bind("<<ComboboxSelected>>", selectedCombo)
+profileCombo.place(relx=0.005, rely=0.05, relwidth=0.99, relheight=0.9) # Place and size combobox
+profileCombo.bind("<<ComboboxSelected>>", selectedCombo) # Refresh task list when a profile is selected
 
 # Task view section
 taskFrame = tk.Frame(root, bg=borderColour)
 taskFrame.place(relx=0.05, rely=0.125, relwidth=0.9, relheight=0.825)
 
 # Listbox for tasks
-taskList = tk.Listbox(taskFrame, borderwidth=0)
-taskList.place(relx=0.005, rely=0.055, relwidth=0.99, relheight=0.94)
-refreshTaskList(db)
+taskList = tk.Listbox(taskFrame, borderwidth=0) # Create listbox for tasks
+taskList.place(relx=0.005, rely=0.055, relwidth=0.99, relheight=0.94) # place listbox
+refreshTaskList(db) # Refresh tasks list
 
 # Scrollbar for task list
 scrollbar = tk.Scrollbar(taskList)
